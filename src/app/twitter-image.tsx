@@ -8,13 +8,11 @@ export const alt = `${SITE_NAME} · ${SITE_TAGLINE}`;
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
-const INTER_BOLD_WOFF =
-  "https://fonts.gstatic.com/s/inter/v18/UcCO3FwrK3iLTeHuS_nVMrMxCp50SjIw2boKoduKmMEVuFuYMRs.woff";
-
 export default async function TwitterImage() {
-  const [interBold, mono] = await Promise.all([
-    fetch(INTER_BOLD_WOFF).then((res) => res.arrayBuffer()),
-    readFile(join(process.cwd(), "public/consiente/fuentes/DM_Mono-Medium.ttf")),
+  const fontsDir = join(process.cwd(), "public/consiente/fuentes");
+  const [bold, mono] = await Promise.all([
+    readFile(join(fontsDir, "BricolageGrotesque-Bold.ttf")),
+    readFile(join(fontsDir, "DM_Mono-Medium.ttf")),
   ]);
 
   return new ImageResponse(
@@ -28,7 +26,7 @@ export default async function TwitterImage() {
           justifyContent: "space-between",
           background: "linear-gradient(145deg, #F7F5EF 0%, #E5E0D5 45%, #0F2D3B 160%)",
           padding: 64,
-          fontFamily: "Inter",
+          fontFamily: "Bricolage",
         }}
       >
         <div style={{ display: "flex", alignItems: "center", gap: 20 }}>
@@ -46,7 +44,7 @@ export default async function TwitterImage() {
               color: "#F7F5EF",
             }}
           >
-            P
+            Q
           </div>
           <div
             style={{
@@ -80,7 +78,7 @@ export default async function TwitterImage() {
     {
       ...size,
       fonts: [
-        { name: "Inter", data: interBold, style: "normal", weight: 700 },
+        { name: "Bricolage", data: bold, style: "normal", weight: 700 },
         { name: "DM Mono", data: mono, style: "normal", weight: 500 },
       ],
     },
