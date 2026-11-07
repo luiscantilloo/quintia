@@ -1,0 +1,11 @@
+{
+  "version": 1,
+  "skills": {
+    "frontend-design": {
+      "source": "pmarashian/cursor-agent-skills",
+      "sourceType": "github",
+      "skillPath": "frontend-design/SKILL.md",
+      "computedHash": "321d855447cd5894975170aa9d5a287878a0a01edc5f814cce5e289c747f4aa2"
+    }
+  }
+}

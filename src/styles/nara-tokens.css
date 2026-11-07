@@ -1,0 +1,50 @@
+:root {
+  /* Valores base; plateado-tokens.css (QUINTIA 2026) los remapea al cargar */
+  --nara-amarillo: #31c6e6; /* Cian · acento vivo */
+  --nara-rosa: #6c04c9; /* Violeta */
+  --nara-crema: #f7f5ef; /* Marfil */
+  --nara-tinta: #0f2d3b; /* Profundidad */
+  --nara-blanco: #ffffff;
+
+  --nara-calma: #e7faf5;
+  --nara-curiosidad: #efe8fb;
+  --nara-duda: #e4f7fb;
+  --nara-energia: #f3ebfb;
+
+  --personaje-nara-calma: #31c6e6;
+  --personaje-nara-curiosidad: #6c04c9;
+  --personaje-nara-duda: #8b4ad4;
+  --personaje-nara-energia: #61f0d2;
+
+  --teo-calma: #31c6e6;
+  --teo-curiosidad: #6c04c9;
+  --teo-duda: #8b4ad4;
+  --teo-energia: #61f0d2;
+
+  /* Neutros derivados · QUINTIA */
+  --texto-secundario: #5b6770;
+  --linea: #e5e0d5;
+  --superficie-2: #ebe7de;
+
+  /* Funcionales · decisión NARA 2026-09-30 (el manual no los define). Nunca solos: siempre con texto o ícono */
+  --crisis: #B42318;          /* texto blanco */
+  --crisis-suave: #FDE7E4;    /* texto #8A1C14 */
+  --crisis-texto: #8A1C14;
+  --ia-borrador: #E5E0D5;     /* borde --teo-curiosidad, texto tinta */
+  --riesgo-minimo: #31C6E6;
+  --riesgo-leve: #e9a319;
+  --riesgo-moderado: #E0A526;
+  --riesgo-moderado-severo: #D9692B;
+  --riesgo-severo: #9C2F25;   /* texto blanco */
+  --digital-baja: #D8D2C9;
+  --digital-media: #8C857C;
+  --digital-alta: #161413;
+  --estado-al-dia: #31C6E6;
+  --exito-suave: #E5E0D5; /* menta QUINTIA */     /* fondo de Validada / Al día, texto tinta */
+  --estado-bajo-meta: #E0A526;
+  --estado-revisar: #D9692B;
+
+  /* Tipografía (QUINTIA remapea en plateado-tokens.css) */
+  --fuente-titulos: var(--font-montserrat), Montserrat, system-ui, sans-serif;
+  --fuente-texto: var(--font-space-grotesk), "Space Grotesk", system-ui, sans-serif;
+}

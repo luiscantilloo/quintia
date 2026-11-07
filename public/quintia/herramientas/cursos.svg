@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none" role="img" aria-label="Cursos">
+  <rect width="64" height="64" rx="16" fill="#EEF3FB"/>
+  <path d="M12 20l20-6 20 6v24l-20 6-20-6V20z" fill="#436FD2"/>
+  <path d="M32 14v36" stroke="#61F0D2" stroke-width="2.5"/>
+  <path d="M18 26h10M18 32h10M18 38h8" stroke="#F7F5EF" stroke-width="2" stroke-linecap="round"/>
+  <path d="M36 26h10M36 32h10M36 38h8" stroke="#F7F5EF" stroke-width="2" stroke-linecap="round"/>
+</svg>

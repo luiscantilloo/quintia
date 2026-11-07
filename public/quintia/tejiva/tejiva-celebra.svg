@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 300" fill="none" role="img" aria-label="TEJIVA celebra">
+  <circle cx="150" cy="168" r="88" fill="#E5E0D5" stroke="#142F3C" stroke-width="8"/>
+  <path d="M150 80 V42" stroke="#436FD2" stroke-width="10" stroke-linecap="round"/><circle cx="150" cy="34" r="12" fill="#436FD2"/>
+  <path d="M198 98 L232 62" stroke="#C27241" stroke-width="10" stroke-linecap="round"/><circle cx="240" cy="54" r="12" fill="#C27241"/>
+  <path d="M220 150 L262 150" stroke="#2B8A74" stroke-width="10" stroke-linecap="round"/><circle cx="274" cy="150" r="12" fill="#2B8A74"/>
+  <path d="M102 98 L68 62" stroke="#C27241" stroke-width="10" stroke-linecap="round"/><circle cx="60" cy="54" r="12" fill="#C27241"/>
+  <path d="M80 150 L38 150" stroke="#287B79" stroke-width="10" stroke-linecap="round"/><circle cx="26" cy="150" r="12" fill="#287B79"/>
+  <path d="M108 158 Q122 148 136 158" stroke="#142F3C" stroke-width="8" stroke-linecap="round" fill="none"/>
+  <path d="M164 158 Q178 148 192 158" stroke="#142F3C" stroke-width="8" stroke-linecap="round" fill="none"/>
+  <path d="M122 198 Q150 228 178 198" stroke="#142F3C" stroke-width="8" stroke-linecap="round" fill="none"/>
+  <circle cx="74" cy="100" r="5" fill="#C27241"/><circle cx="226" cy="96" r="5" fill="#2B8A74"/><circle cx="150" cy="248" r="5" fill="#436FD2"/>
+</svg>

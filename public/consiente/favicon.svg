@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" role="img" aria-label="QUINTIA">
+  <rect width="100" height="100" rx="22" fill="#0F2D3B"/>
+  <circle cx="36" cy="36" r="16" fill="#6C04C9"/>
+  <circle cx="64" cy="36" r="16" fill="#31C6E6"/>
+  <circle cx="64" cy="64" r="16" fill="#8B4AD4"/>
+  <circle cx="36" cy="64" r="16" fill="#31C6E6"/>
+</svg>

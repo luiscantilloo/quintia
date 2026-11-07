@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 300" fill="none" role="img" aria-label="TEJIVA">
+  <!-- Cuerpo abstracto (no humanoide) -->
+  <circle cx="150" cy="168" r="88" fill="#F7F5EF" stroke="#142F3C" stroke-width="8"/>
+  <!-- Cinco antenas / fuerzas -->
+  <path d="M150 80 V42" stroke="#436FD2" stroke-width="10" stroke-linecap="round"/>
+  <circle cx="150" cy="34" r="12" fill="#436FD2"/>
+  <path d="M198 98 L232 62" stroke="#C27241" stroke-width="10" stroke-linecap="round"/>
+  <circle cx="240" cy="54" r="12" fill="#C27241"/>
+  <path d="M220 150 L262 150" stroke="#2B8A74" stroke-width="10" stroke-linecap="round"/>
+  <circle cx="274" cy="150" r="12" fill="#2B8A74"/>
+  <path d="M102 98 L68 62" stroke="#C27241" stroke-width="10" stroke-linecap="round"/>
+  <circle cx="60" cy="54" r="12" fill="#C27241"/>
+  <path d="M80 150 L38 150" stroke="#287B79" stroke-width="10" stroke-linecap="round"/>
+  <circle cx="26" cy="150" r="12" fill="#287B79"/>
+  <!-- Rostro simple -->
+  <circle cx="122" cy="160" r="10" fill="#142F3C"/>
+  <circle cx="178" cy="160" r="10" fill="#142F3C"/>
+  <path d="M128 196 Q150 214 172 196" stroke="#142F3C" stroke-width="8" stroke-linecap="round" fill="none"/>
+  <!-- Burbuja chat -->
+  <circle cx="214" cy="228" r="18" fill="#2B8A74"/>
+  <circle cx="214" cy="228" r="7" fill="#F7F5EF"/>
+</svg>

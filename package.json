@@ -1,0 +1,48 @@
+{
+  "name": "quintia-web",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Frente web QUINTIA (TEJIVA) — Núcleo Care",
+  "scripts": {
+    "dev": "next dev --port 3004 --webpack",
+    "dev:webpack": "next dev --port 3004 --webpack",
+    "build": "next build",
+    "start": "next start --port 3004",
+    "lint": "eslint",
+    "db:init": "node scripts/init-db.mjs",
+    "db:seed-admin": "node scripts/seed-admin.mjs",
+    "db:seed:quintia": "node ../nucleo-api/scripts/seed-quintia-demo.mjs",
+    "db:migrate-patients": "node scripts/migrate-patients-xlsx.mjs",
+    "test": "node --test test/*.test.mjs",
+    "test:e2e": "playwright test",
+    "dev:turbo": "next dev --port 3004"
+  },
+  "dependencies": {
+    "bcryptjs": "^3.0.3",
+    "exceljs": "^4.4.0",
+    "leaflet": "^1.9.4",
+    "mongodb": "^7.7.0",
+    "next": "^16.4.3",
+    "react": "19.2.8",
+    "react-dom": "19.2.8",
+    "react-icons": "^5.7.0",
+    "sweetalert2": "^11.26.25"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.55.0",
+    "@tailwindcss/postcss": "^4",
+    "@types/bcryptjs": "^2.4.6",
+    "@types/leaflet": "^1.9.22",
+    "@types/node": "^20",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "dotenv": "^18.0.5",
+    "eslint": "^9",
+    "eslint-config-next": "^16.4.3",
+    "tailwindcss": "^4",
+    "typescript": "^5"
+  },
+  "overrides": {
+    "source-map-js": ">=1.2.2"
+  }
+}

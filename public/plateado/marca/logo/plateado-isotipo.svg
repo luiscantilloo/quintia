@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" fill="none" role="img" aria-label="Quintia">
+  <defs>
+    <linearGradient id="q" x1="8" y1="6" x2="40" y2="42" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#61F0D2"/>
+      <stop offset="0.45" stop-color="#31C6E6"/>
+      <stop offset="1" stop-color="#6C04C9"/>
+    </linearGradient>
+  </defs>
+  <circle cx="22.5" cy="21.5" r="13.5" stroke="url(#q)" stroke-width="5.2"/>
+  <circle cx="22.5" cy="15.2" r="3.1" fill="#332F32"/>
+  <path d="M16.2 23.2c1.6 5.4 7.2 8.2 12.4 5.6 1.4-.7 2.6-1.2 4.2.2L39 38.5" stroke="#332F32" stroke-width="4.4" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>

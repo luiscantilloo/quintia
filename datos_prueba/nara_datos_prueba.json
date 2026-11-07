@@ -1,0 +1,2991 @@
+{
+  "meta": {
+    "version": "2.0",
+    "versionReglas": 2,
+    "fechaReferencia": "2026-10-08",
+    "fuente": "Base De Datos Web Salud Mental - 24 Junio 2022 (1).xlsx · reunión «Revisión de avances» 8 oct 2026 · NARA-manuales-v1.2",
+    "reglas": "datos_prueba/reglas_nara.js (copia de store.js)",
+    "decisiones": [
+      "Roles: Administrador, Experto de campo, Clínico, Paciente y Observador (rol único).",
+      "5 territorios; cada uno con 1 experto, 1 clínico y 1 observador. Toda persona del territorio queda asignada a ese experto y a ese clínico.",
+      "15 pacientes evaluados, uno por perfil P01–P15, y 5 «Sin evaluación», uno por territorio. Datos reales de la base 2022; correo y teléfono ficticios.",
+      "Un cambio de ruta pendiente (CR-001, P08) para probar «Aprobaciones» de la líder clínica.",
+      "Seguimiento: el contacto se mide por el canal de la capacidad digital (Alta = ingreso a la app, Media = WhatsApp, Baja = llamada o revisita). 14 días sin contacto = alerta «Sin contacto» (sigue Activo); más de 28 = Inactivo; un contacto nuevo lo devuelve a Activo.",
+      "Personal ficticio. Se reusan las cuentas existentes de admin@nara.com y de la Dra. Lucía Marín (líder clínica).",
+      "Sin «Contexto del sismo» en los 5 territorios: daño y pérdida en 0.",
+      "Rutas = matriz definitiva v2 (aprobada el 8 oct 2026). Coinciden con la interfaz solo cuando Lucho implemente la Fase 1 de las specs.",
+      "Sin contraseñas en este JSON: se generan al armar el Excel de carga."
+    ]
+  },
+  "territorios": [
+    {
+      "codigo": "BUC",
+      "nombre": "Bucaramanga",
+      "departamento": "Santander",
+      "nivel": "Municipio completo",
+      "metaCaptacion": 50,
+      "ruralMinPct": 0,
+      "sesentaMinPct": 0,
+      "contenidoLocal": [
+        "PHQ-9 + capacidad digital (base)"
+      ],
+      "lugares": [
+        "Bucaramanga, Santander"
+      ],
+      "expertoId": "u-exp-bucaramanga",
+      "clinicoId": "u-cli-bucaramanga",
+      "observadorId": "u-obs-bucaramanga"
+    },
+    {
+      "codigo": "FLO",
+      "nombre": "Floridablanca",
+      "departamento": "Santander",
+      "nivel": "Municipio completo",
+      "metaCaptacion": 50,
+      "ruralMinPct": 0,
+      "sesentaMinPct": 0,
+      "contenidoLocal": [
+        "PHQ-9 + capacidad digital (base)"
+      ],
+      "lugares": [
+        "Floridablanca, Santander"
+      ],
+      "expertoId": "u-exp-floridablanca",
+      "clinicoId": "u-cli-floridablanca",
+      "observadorId": "u-obs-floridablanca"
+    },
+    {
+      "codigo": "BOG",
+      "nombre": "Bogotá",
+      "departamento": "Bogotá D.C.",
+      "nivel": "Municipio completo",
+      "metaCaptacion": 50,
+      "ruralMinPct": 0,
+      "sesentaMinPct": 0,
+      "contenidoLocal": [
+        "PHQ-9 + capacidad digital (base)"
+      ],
+      "lugares": [
+        "Bogotá, Bogotá D.C."
+      ],
+      "expertoId": "u-exp-bogota",
+      "clinicoId": "umuvzhvkb",
+      "observadorId": "u-obs-bogota"
+    },
+    {
+      "codigo": "CAL",
+      "nombre": "Cali",
+      "departamento": "Valle del Cauca",
+      "nivel": "Municipio completo",
+      "metaCaptacion": 50,
+      "ruralMinPct": 0,
+      "sesentaMinPct": 0,
+      "contenidoLocal": [
+        "PHQ-9 + capacidad digital (base)"
+      ],
+      "lugares": [
+        "Cali, Valle del Cauca"
+      ],
+      "expertoId": "u-exp-cali",
+      "clinicoId": "u-cli-cali",
+      "observadorId": "u-obs-cali"
+    },
+    {
+      "codigo": "BAR",
+      "nombre": "Barranquilla",
+      "departamento": "Atlántico",
+      "nivel": "Municipio completo",
+      "metaCaptacion": 50,
+      "ruralMinPct": 0,
+      "sesentaMinPct": 0,
+      "contenidoLocal": [
+        "PHQ-9 + capacidad digital (base)"
+      ],
+      "lugares": [
+        "Barranquilla, Atlántico"
+      ],
+      "expertoId": "u-exp-barranquilla",
+      "clinicoId": "u-cli-barranquilla",
+      "observadorId": "u-obs-barranquilla"
+    }
+  ],
+  "usuarios": [
+    {
+      "id": "admin",
+      "rol": "Administrador",
+      "nombre": "Administrador NARA",
+      "correo": "admin@nara.com",
+      "telefono": "",
+      "territorio": "TODOS",
+      "organizacion": "Programa NARA",
+      "estado": "Activo",
+      "origen": "Cuenta existente (reusar)",
+      "nota": "Rotar la clave actual: AdminNara2026 está en el repositorio (hallazgo S-4)."
+    },
+    {
+      "id": "u-exp-bucaramanga",
+      "rol": "Experto de campo",
+      "nombre": "Laura Milena Rueda Pinzón",
+      "correo": "laura.rueda@nara.com",
+      "telefono": "300 000 0101",
+      "territorio": "BUC",
+      "organizacion": "Programa NARA",
+      "estado": "Activo",
+      "origen": "Ficticio",
+      "expertsId": "exp-bucaramanga",
+      "metaDia": 9,
+      "metaSemana": 45,
+      "capacitacion": "Completa",
+      "tablet": "TB-001"
+    },
+    {
+      "id": "u-exp-floridablanca",
+      "rol": "Experto de campo",
+      "nombre": "Jhon Fredy Ardila Serrano",
+      "correo": "jhon.ardila@nara.com",
+      "telefono": "300 000 0102",
+      "territorio": "FLO",
+      "organizacion": "Programa NARA",
+      "estado": "Activo",
+      "origen": "Ficticio",
+      "expertsId": "exp-floridablanca",
+      "metaDia": 9,
+      "metaSemana": 45,
+      "capacitacion": "Completa",
+      "tablet": "TB-002"
+    },
+    {
+      "id": "u-exp-bogota",
+      "rol": "Experto de campo",
+      "nombre": "Natalia Andrea Cárdenas Moreno",
+      "correo": "natalia.cardenas@nara.com",
+      "telefono": "300 000 0103",
+      "territorio": "BOG",
+      "organizacion": "Programa NARA",
+      "estado": "Activo",
+      "origen": "Ficticio",
+      "expertsId": "exp-bogota",
+      "metaDia": 9,
+      "metaSemana": 45,
+      "capacitacion": "Completa",
+      "tablet": "TB-003"
+    },
+    {
+      "id": "u-exp-cali",
+      "rol": "Experto de campo",
+      "nombre": "Carlos Andrés Mosquera Valencia",
+      "correo": "carlos.mosquera@nara.com",
+      "telefono": "300 000 0104",
+      "territorio": "CAL",
+      "organizacion": "Programa NARA",
+      "estado": "Activo",
+      "origen": "Ficticio",
+      "expertsId": "exp-cali",
+      "metaDia": 9,
+      "metaSemana": 45,
+      "capacitacion": "Completa",
+      "tablet": "TB-004"
+    },
+    {
+      "id": "u-exp-barranquilla",
+      "rol": "Experto de campo",
+      "nombre": "Katherine Paola De la Hoz Charris",
+      "correo": "katherine.delahoz@nara.com",
+      "telefono": "300 000 0105",
+      "territorio": "BAR",
+      "organizacion": "Programa NARA",
+      "estado": "Activo",
+      "origen": "Ficticio",
+      "expertsId": "exp-barranquilla",
+      "metaDia": 9,
+      "metaSemana": 45,
+      "capacitacion": "Completa",
+      "tablet": "TB-005"
+    },
+    {
+      "id": "u-cli-bucaramanga",
+      "rol": "Clínico",
+      "nombre": "Dra. Adriana Marcela Gómez Duarte",
+      "correo": "adriana.gomez@nara.com",
+      "telefono": "300 000 0201",
+      "territorio": "BUC",
+      "organizacion": "Programa NARA",
+      "estado": "Activo",
+      "liderClinica": false,
+      "origen": "Ficticio"
+    },
+    {
+      "id": "u-cli-floridablanca",
+      "rol": "Clínico",
+      "nombre": "Dr. Felipe Augusto Quintero Mantilla",
+      "correo": "felipe.quintero@nara.com",
+      "telefono": "300 000 0202",
+      "territorio": "FLO",
+      "organizacion": "Programa NARA",
+      "estado": "Activo",
+      "liderClinica": false,
+      "origen": "Ficticio"
+    },
+    {
+      "id": "umuvzhvkb",
+      "rol": "Clínico",
+      "nombre": "Dra. Lucía Marín",
+      "correo": "lucia.marin@nara.com",
+      "telefono": "300 000 0203",
+      "territorio": "BOG",
+      "organizacion": "Programa NARA",
+      "estado": "Activo",
+      "liderClinica": true,
+      "origen": "Cuenta existente (reusar); cambia de Quindío a Bogotá"
+    },
+    {
+      "id": "u-cli-cali",
+      "rol": "Clínico",
+      "nombre": "Dra. Paola Andrea Caicedo Arboleda",
+      "correo": "paola.caicedo@nara.com",
+      "telefono": "300 000 0204",
+      "territorio": "CAL",
+      "organizacion": "Programa NARA",
+      "estado": "Activo",
+      "liderClinica": false,
+      "origen": "Ficticio"
+    },
+    {
+      "id": "u-cli-barranquilla",
+      "rol": "Clínico",
+      "nombre": "Dr. Rafael Enrique Barrios Pertuz",
+      "correo": "rafael.barrios@nara.com",
+      "telefono": "300 000 0205",
+      "territorio": "BAR",
+      "organizacion": "Programa NARA",
+      "estado": "Activo",
+      "liderClinica": false,
+      "origen": "Ficticio"
+    },
+    {
+      "id": "u-obs-bucaramanga",
+      "rol": "Observador",
+      "nombre": "Mónica Liliana Parra Ortiz",
+      "correo": "monica.parra@nara.com",
+      "telefono": "300 000 0301",
+      "territorio": "BUC",
+      "organizacion": "Fundación NARA",
+      "estado": "Activo",
+      "origen": "Ficticio",
+      "modulos": [
+        "Avance del territorio (agregado)",
+        "Resultados (agregado)",
+        "TEO"
+      ]
+    },
+    {
+      "id": "u-obs-floridablanca",
+      "rol": "Observador",
+      "nombre": "Hernán Darío Suárez León",
+      "correo": "hernan.suarez@nara.com",
+      "telefono": "300 000 0302",
+      "territorio": "FLO",
+      "organizacion": "Fundación NARA",
+      "estado": "Activo",
+      "origen": "Ficticio",
+      "modulos": [
+        "Avance del territorio (agregado)",
+        "Resultados (agregado)",
+        "TEO"
+      ]
+    },
+    {
+      "id": "u-obs-bogota",
+      "rol": "Observador",
+      "nombre": "Carolina Ospina Ríos",
+      "correo": "carolina.ospina@nara.com",
+      "telefono": "300 000 0303",
+      "territorio": "BOG",
+      "organizacion": "Centro de Investigación NARA",
+      "estado": "Activo",
+      "origen": "Ficticio",
+      "modulos": [
+        "Avance del territorio (agregado)",
+        "Resultados (agregado)",
+        "TEO"
+      ]
+    },
+    {
+      "id": "u-obs-cali",
+      "rol": "Observador",
+      "nombre": "Julián Esteban Arango Muñoz",
+      "correo": "julian.arango@nara.com",
+      "telefono": "300 000 0304",
+      "territorio": "CAL",
+      "organizacion": "Centro de Investigación NARA",
+      "estado": "Activo",
+      "origen": "Ficticio",
+      "modulos": [
+        "Avance del territorio (agregado)",
+        "Resultados (agregado)",
+        "TEO"
+      ]
+    },
+    {
+      "id": "u-obs-barranquilla",
+      "rol": "Observador",
+      "nombre": "Mariana Isabel Vergara Palencia",
+      "correo": "mariana.vergara@nara.com",
+      "telefono": "300 000 0305",
+      "territorio": "BAR",
+      "organizacion": "Red de Salud Aliada NARA",
+      "estado": "Activo",
+      "origen": "Ficticio",
+      "modulos": [
+        "Avance del territorio (agregado)",
+        "Resultados (agregado)",
+        "TEO"
+      ]
+    },
+    {
+      "id": "u-pac-sm-436",
+      "rol": "Paciente",
+      "nombre": "Darly Yasmin Solano",
+      "correo": "buc-sm436@pacientes.nara.local",
+      "telefono": "300 000 1436",
+      "territorio": "BUC",
+      "organizacion": "Programa NARA",
+      "estado": "Activo",
+      "origen": "Real (base 2022) · correo y teléfono ficticios",
+      "pacienteId": "sm-436",
+      "perfilListo": true
+    },
+    {
+      "id": "u-pac-sm-496",
+      "rol": "Paciente",
+      "nombre": "Cristian Páez Pérez",
+      "correo": "buc-sm496@pacientes.nara.local",
+      "telefono": "300 000 1496",
+      "territorio": "BUC",
+      "organizacion": "Programa NARA",
+      "estado": "Activo",
+      "origen": "Real (base 2022) · correo y teléfono ficticios",
+      "pacienteId": "sm-496",
+      "perfilListo": true
+    },
+    {
+      "id": "u-pac-sm-135",
+      "rol": "Paciente",
+      "nombre": "Silvia Margarita Martínez Franco",
+      "correo": "buc-sm135@pacientes.nara.local",
+      "telefono": "300 000 1135",
+      "territorio": "BUC",
+      "organizacion": "Programa NARA",
+      "estado": "Activo",
+      "origen": "Real (base 2022) · correo y teléfono ficticios",
+      "pacienteId": "sm-135",
+      "perfilListo": false
+    },
+    {
+      "id": "u-pac-sm-435",
+      "rol": "Paciente",
+      "nombre": "Sandra Milena García Pinto",
+      "correo": "flo-sm435@pacientes.nara.local",
+      "telefono": "300 000 1435",
+      "territorio": "FLO",
+      "organizacion": "Programa NARA",
+      "estado": "Activo",
+      "origen": "Real (base 2022) · correo y teléfono ficticios",
+      "pacienteId": "sm-435",
+      "perfilListo": true
+    },
+    {
+      "id": "u-pac-sm-434",
+      "rol": "Paciente",
+      "nombre": "Vanessa Castellanos",
+      "correo": "flo-sm434@pacientes.nara.local",
+      "telefono": "300 000 1434",
+      "territorio": "FLO",
+      "organizacion": "Programa NARA",
+      "estado": "Activo",
+      "origen": "Real (base 2022) · correo y teléfono ficticios",
+      "pacienteId": "sm-434",
+      "perfilListo": false
+    },
+    {
+      "id": "u-pac-sm-365",
+      "rol": "Paciente",
+      "nombre": "Paula Pimienta",
+      "correo": "flo-sm365@pacientes.nara.local",
+      "telefono": "300 000 1365",
+      "territorio": "FLO",
+      "organizacion": "Programa NARA",
+      "estado": "Activo",
+      "origen": "Real (base 2022) · correo y teléfono ficticios",
+      "pacienteId": "sm-365",
+      "perfilListo": true
+    },
+    {
+      "id": "u-pac-sm-347",
+      "rol": "Paciente",
+      "nombre": "Ana Rojas",
+      "correo": "bog-sm347@pacientes.nara.local",
+      "telefono": "300 000 1347",
+      "territorio": "BOG",
+      "organizacion": "Programa NARA",
+      "estado": "Activo",
+      "origen": "Real (base 2022) · correo y teléfono ficticios",
+      "pacienteId": "sm-347",
+      "perfilListo": true
+    },
+    {
+      "id": "u-pac-sm-321",
+      "rol": "Paciente",
+      "nombre": "Julieth",
+      "correo": "bog-sm321@pacientes.nara.local",
+      "telefono": "300 000 1321",
+      "territorio": "BOG",
+      "organizacion": "Programa NARA",
+      "estado": "Activo",
+      "origen": "Real (base 2022) · correo y teléfono ficticios",
+      "pacienteId": "sm-321",
+      "perfilListo": false
+    },
+    {
+      "id": "u-pac-sm-237",
+      "rol": "Paciente",
+      "nombre": "Isabel",
+      "correo": "bog-sm237@pacientes.nara.local",
+      "telefono": "300 000 1237",
+      "territorio": "BOG",
+      "organizacion": "Programa NARA",
+      "estado": "Activo",
+      "origen": "Real (base 2022) · correo y teléfono ficticios",
+      "pacienteId": "sm-237",
+      "perfilListo": false
+    },
+    {
+      "id": "u-pac-sm-352",
+      "rol": "Paciente",
+      "nombre": "Lorena Lasso",
+      "correo": "cal-sm352@pacientes.nara.local",
+      "telefono": "300 000 1352",
+      "territorio": "CAL",
+      "organizacion": "Programa NARA",
+      "estado": "Activo",
+      "origen": "Real (base 2022) · correo y teléfono ficticios",
+      "pacienteId": "sm-352",
+      "perfilListo": true
+    },
+    {
+      "id": "u-pac-sm-182",
+      "rol": "Paciente",
+      "nombre": "Andrés",
+      "correo": "cal-sm182@pacientes.nara.local",
+      "telefono": "300 000 1182",
+      "territorio": "CAL",
+      "organizacion": "Programa NARA",
+      "estado": "Activo",
+      "origen": "Real (base 2022) · correo y teléfono ficticios",
+      "pacienteId": "sm-182",
+      "perfilListo": true
+    },
+    {
+      "id": "u-pac-sm-204",
+      "rol": "Paciente",
+      "nombre": "Yessenia Coime",
+      "correo": "cal-sm204@pacientes.nara.local",
+      "telefono": "300 000 1204",
+      "territorio": "CAL",
+      "organizacion": "Programa NARA",
+      "estado": "Activo",
+      "origen": "Real (base 2022) · correo y teléfono ficticios",
+      "pacienteId": "sm-204",
+      "perfilListo": false
+    },
+    {
+      "id": "u-pac-sm-124",
+      "rol": "Paciente",
+      "nombre": "Neil",
+      "correo": "bar-sm124@pacientes.nara.local",
+      "telefono": "300 000 1124",
+      "territorio": "BAR",
+      "organizacion": "Programa NARA",
+      "estado": "Activo",
+      "origen": "Real (base 2022) · correo y teléfono ficticios",
+      "pacienteId": "sm-124",
+      "perfilListo": false
+    },
+    {
+      "id": "u-pac-sm-351",
+      "rol": "Paciente",
+      "nombre": "Mariluz",
+      "correo": "bar-sm351@pacientes.nara.local",
+      "telefono": "300 000 1351",
+      "territorio": "BAR",
+      "organizacion": "Programa NARA",
+      "estado": "Activo",
+      "origen": "Real (base 2022) · correo y teléfono ficticios",
+      "pacienteId": "sm-351",
+      "perfilListo": true
+    },
+    {
+      "id": "u-pac-sm-300",
+      "rol": "Paciente",
+      "nombre": "Andreina",
+      "correo": "bar-sm300@pacientes.nara.local",
+      "telefono": "300 000 1300",
+      "territorio": "BAR",
+      "organizacion": "Programa NARA",
+      "estado": "Activo",
+      "origen": "Real (base 2022) · correo y teléfono ficticios",
+      "pacienteId": "sm-300",
+      "perfilListo": false
+    },
+    {
+      "id": "u-pac-sm-327",
+      "rol": "Paciente",
+      "nombre": "Beatriz Elena Ramírez Coronado",
+      "correo": "buc-sm327@pacientes.nara.local",
+      "telefono": "300 000 1327",
+      "territorio": "BUC",
+      "organizacion": "Programa NARA",
+      "estado": "Activo",
+      "origen": "Real (base 2022) · correo y teléfono ficticios",
+      "pacienteId": "sm-327",
+      "perfilListo": false
+    },
+    {
+      "id": "u-pac-sm-433",
+      "rol": "Paciente",
+      "nombre": "Tatiana",
+      "correo": "flo-sm433@pacientes.nara.local",
+      "telefono": "300 000 1433",
+      "territorio": "FLO",
+      "organizacion": "Programa NARA",
+      "estado": "Activo",
+      "origen": "Real (base 2022) · correo y teléfono ficticios",
+      "pacienteId": "sm-433",
+      "perfilListo": false
+    },
+    {
+      "id": "u-pac-sm-207",
+      "rol": "Paciente",
+      "nombre": "Juli",
+      "correo": "bog-sm207@pacientes.nara.local",
+      "telefono": "300 000 1207",
+      "territorio": "BOG",
+      "organizacion": "Programa NARA",
+      "estado": "Activo",
+      "origen": "Real (base 2022) · correo y teléfono ficticios",
+      "pacienteId": "sm-207",
+      "perfilListo": false
+    },
+    {
+      "id": "u-pac-sm-406",
+      "rol": "Paciente",
+      "nombre": "Stiven",
+      "correo": "cal-sm406@pacientes.nara.local",
+      "telefono": "300 000 1406",
+      "territorio": "CAL",
+      "organizacion": "Programa NARA",
+      "estado": "Activo",
+      "origen": "Real (base 2022) · correo y teléfono ficticios",
+      "pacienteId": "sm-406",
+      "perfilListo": false
+    },
+    {
+      "id": "u-pac-sm-187",
+      "rol": "Paciente",
+      "nombre": "Esmy",
+      "correo": "bar-sm187@pacientes.nara.local",
+      "telefono": "300 000 1187",
+      "territorio": "BAR",
+      "organizacion": "Programa NARA",
+      "estado": "Activo",
+      "origen": "Real (base 2022) · correo y teléfono ficticios",
+      "pacienteId": "sm-187",
+      "perfilListo": false
+    }
+  ],
+  "pacientes": [
+    {
+      "id": "sm-436",
+      "codigo": "BUC-SM436",
+      "cuentaId": "u-pac-sm-436",
+      "idOriginal2022": 436,
+      "nombre": "Darly Yasmin Solano",
+      "origenNombre": "Real · nombre y apellido",
+      "valorOriginalEnBase": "Darly yasmin solano",
+      "edad": 27,
+      "sexo": "Femenino",
+      "identidadGenero": "Femenino",
+      "estadoCivil": "Unión Libre",
+      "estrato": 1,
+      "municipioBase2022": "Bucaramanga",
+      "fechaRegistro2022": "2022-06-23",
+      "territorio": "BUC",
+      "expertoId": "u-exp-bucaramanga",
+      "clinicoId": "u-cli-bucaramanga",
+      "evaluacion": {
+        "fecha": "2026-08-20",
+        "duracionMin": 34,
+        "expertoId": "u-exp-bucaramanga",
+        "phq9": [
+          0,
+          1,
+          1,
+          1,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "digital": [
+          1,
+          0,
+          0,
+          0,
+          1,
+          0
+        ],
+        "contexto": {
+          "danoVivienda": 0,
+          "perdidaFamiliar": 0
+        }
+      },
+      "resultado": {
+        "phqTotal": 3,
+        "riesgo": "Mínimo",
+        "digitalTotal": 2,
+        "capacidadDigital": "Baja",
+        "notaFamiliar": "",
+        "perfil": "P01"
+      },
+      "flujo": {
+        "estado": "Inactivo",
+        "decisionClinica": {
+          "decision": "Aprobado",
+          "fecha": "2026-08-21",
+          "clinicoId": "u-cli-bucaramanga",
+          "motivo": null
+        },
+        "alertaCrisis": null,
+        "proximoPaso": "Más de 4 semanas sin contacto: el experto la busca en la próxima revisita."
+      },
+      "consentimiento": {
+        "obligatorios": true,
+        "contacto": true,
+        "manilla": false,
+        "remision": false
+      },
+      "ruta": {
+        "duracionMeses": 3,
+        "servicios": [
+          {
+            "id": "call",
+            "servicio": "Llamada de seguimiento",
+            "frecuencia": "Mensual",
+            "canal": "Teléfono"
+          },
+          {
+            "id": "tech",
+            "servicio": "Técnicas guiadas",
+            "frecuencia": "Material impreso",
+            "canal": ""
+          },
+          {
+            "id": "revisit",
+            "servicio": "Revisita del experto",
+            "frecuencia": "Mensual",
+            "canal": "Visita en casa"
+          },
+          {
+            "id": "group",
+            "servicio": "Grupo de apoyo en la vereda",
+            "frecuencia": "Mensual",
+            "canal": "En la vereda · con facilitador"
+          },
+          {
+            "id": "cursos",
+            "servicio": "Cursos y cuentos",
+            "frecuencia": "Curso con el experto",
+            "canal": "Cuadernillo impreso · audio en la visita"
+          }
+        ]
+      },
+      "curso": {
+        "id": "calma",
+        "titulo": "Calma cuando tiembla",
+        "semanas": 4,
+        "motivo": "para manejar el miedo y el estrés",
+        "modalidad": "Curso con el experto",
+        "canal": "Cuadernillo impreso · audio en la visita"
+      },
+      "seguimiento": {
+        "ultimoContacto": "2026-09-03",
+        "canal": "Llamada de seguimiento",
+        "adherenciaPct": 18,
+        "sinContacto": true
+      }
+    },
+    {
+      "id": "sm-496",
+      "codigo": "BUC-SM496",
+      "cuentaId": "u-pac-sm-496",
+      "idOriginal2022": 496,
+      "nombre": "Cristian Páez Pérez",
+      "origenNombre": "Real · nombre y apellido",
+      "valorOriginalEnBase": "Cristian Paez Perez",
+      "edad": 28,
+      "sexo": "Masculino",
+      "identidadGenero": "Masculino",
+      "estadoCivil": "Soltero(A)",
+      "estrato": 1,
+      "municipioBase2022": "Bucaramanga",
+      "fechaRegistro2022": "2022-06-24",
+      "territorio": "BUC",
+      "expertoId": "u-exp-bucaramanga",
+      "clinicoId": "u-cli-bucaramanga",
+      "evaluacion": {
+        "fecha": "2026-09-08",
+        "duracionMin": 41,
+        "expertoId": "u-exp-bucaramanga",
+        "phq9": [
+          2,
+          2,
+          1,
+          1,
+          1,
+          0,
+          1,
+          0,
+          0
+        ],
+        "digital": [
+          1,
+          1,
+          1,
+          1,
+          0,
+          1
+        ],
+        "contexto": {
+          "danoVivienda": 0,
+          "perdidaFamiliar": 0
+        }
+      },
+      "resultado": {
+        "phqTotal": 8,
+        "riesgo": "Leve",
+        "digitalTotal": 5,
+        "capacidadDigital": "Media",
+        "notaFamiliar": "El apoyo de un familiar sube el nivel de Baja a Media.",
+        "perfil": "P05"
+      },
+      "flujo": {
+        "estado": "Activo",
+        "decisionClinica": {
+          "decision": "Aprobado",
+          "fecha": "2026-09-09",
+          "clinicoId": "u-cli-bucaramanga",
+          "motivo": null
+        },
+        "alertaCrisis": null,
+        "proximoPaso": "Seguir la ruta; próxima revisión cada 4 semanas."
+      },
+      "consentimiento": {
+        "obligatorios": true,
+        "contacto": true,
+        "manilla": false,
+        "remision": false
+      },
+      "ruta": {
+        "duracionMeses": 3,
+        "servicios": [
+          {
+            "id": "wa",
+            "servicio": "Check-ins por WhatsApp",
+            "frecuencia": "1 vez por semana",
+            "canal": "Audio primero"
+          },
+          {
+            "id": "videos",
+            "servicio": "Videos psicoeducativos",
+            "frecuencia": "Serie completa",
+            "canal": ""
+          },
+          {
+            "id": "tech",
+            "servicio": "Técnicas guiadas",
+            "frecuencia": "En audio",
+            "canal": ""
+          },
+          {
+            "id": "revisit",
+            "servicio": "Revisita del experto",
+            "frecuencia": "Mensual",
+            "canal": "Visita en casa"
+          },
+          {
+            "id": "group",
+            "servicio": "Grupo de apoyo en la vereda",
+            "frecuencia": "Mensual",
+            "canal": "En la vereda · con facilitador"
+          },
+          {
+            "id": "cursos",
+            "servicio": "Cursos y cuentos",
+            "frecuencia": "Curso guiado por TEO",
+            "canal": "WhatsApp · portada, audio y pregunta"
+          }
+        ]
+      },
+      "curso": {
+        "id": "animo",
+        "titulo": "Ánimo, paso a paso",
+        "semanas": 4,
+        "motivo": "porque tiene el ánimo bajo",
+        "modalidad": "Curso guiado por TEO",
+        "canal": "WhatsApp · portada, audio y pregunta"
+      },
+      "seguimiento": {
+        "ultimoContacto": "2026-10-07",
+        "canal": "Check-in por WhatsApp",
+        "adherenciaPct": 82,
+        "sinContacto": false
+      }
+    },
+    {
+      "id": "sm-135",
+      "codigo": "BUC-SM135",
+      "cuentaId": "u-pac-sm-135",
+      "idOriginal2022": 135,
+      "nombre": "Silvia Margarita Martínez Franco",
+      "origenNombre": "Real · nombre y apellido",
+      "valorOriginalEnBase": "Silvia Margarita Martinez Franco",
+      "edad": 45,
+      "sexo": "Femenino",
+      "identidadGenero": "Femenino",
+      "estadoCivil": "Casado(A)",
+      "estrato": 6,
+      "municipioBase2022": "Bucaramanga",
+      "fechaRegistro2022": "2022-05-27",
+      "territorio": "BUC",
+      "expertoId": "u-exp-bucaramanga",
+      "clinicoId": "u-cli-bucaramanga",
+      "evaluacion": {
+        "fecha": "2026-10-07",
+        "duracionMin": 38,
+        "expertoId": "u-exp-bucaramanga",
+        "phq9": [
+          2,
+          1,
+          2,
+          2,
+          2,
+          1,
+          2,
+          1,
+          0
+        ],
+        "digital": [
+          2,
+          2,
+          2,
+          1,
+          2,
+          0
+        ],
+        "contexto": {
+          "danoVivienda": 0,
+          "perdidaFamiliar": 0
+        }
+      },
+      "resultado": {
+        "phqTotal": 13,
+        "riesgo": "Moderado",
+        "digitalTotal": 9,
+        "capacidadDigital": "Alta",
+        "notaFamiliar": "",
+        "perfil": "P09"
+      },
+      "flujo": {
+        "estado": "Por aprobar",
+        "decisionClinica": {
+          "decision": "Pendiente",
+          "fecha": null,
+          "clinicoId": null,
+          "motivo": null
+        },
+        "alertaCrisis": null,
+        "proximoPaso": "El clínico del territorio aprueba o rechaza el perfil y la ruta."
+      },
+      "consentimiento": {
+        "obligatorios": true,
+        "contacto": true,
+        "manilla": true,
+        "remision": false
+      },
+      "ruta": {
+        "duracionMeses": 6,
+        "servicios": [
+          {
+            "id": "mood",
+            "servicio": "Estado de ánimo",
+            "frecuencia": "Diario",
+            "canal": "App · check-in diario"
+          },
+          {
+            "id": "clin",
+            "servicio": "Psicólogo clínico",
+            "frecuencia": "Mensual",
+            "canal": "Videollamada o teléfono"
+          },
+          {
+            "id": "ia",
+            "servicio": "Acompañante con IA (TEO)",
+            "frecuencia": "Entre sesiones",
+            "canal": "App"
+          },
+          {
+            "id": "wa",
+            "servicio": "Check-ins por WhatsApp",
+            "frecuencia": "3 veces por semana",
+            "canal": "Audio primero"
+          },
+          {
+            "id": "bracelet",
+            "servicio": "Manilla de monitoreo",
+            "frecuencia": "6 meses",
+            "canal": "Sueño y ritmo cardiaco"
+          },
+          {
+            "id": "videos",
+            "servicio": "Videos psicoeducativos",
+            "frecuencia": "Serie completa",
+            "canal": ""
+          },
+          {
+            "id": "tech",
+            "servicio": "Técnicas guiadas",
+            "frecuencia": "En audio",
+            "canal": ""
+          },
+          {
+            "id": "pmplus",
+            "servicio": "Problem Management Plus (PM+)",
+            "frecuencia": "5 sesiones semanales",
+            "canal": "En casa · experto capacitado"
+          },
+          {
+            "id": "cursos",
+            "servicio": "Cursos y cuentos",
+            "frecuencia": "Curso con el experto",
+            "canal": "App · leer y escuchar"
+          }
+        ]
+      },
+      "curso": {
+        "id": "dormir",
+        "titulo": "Dormir mejor después del sismo",
+        "semanas": 4,
+        "motivo": "porque duerme mal desde el sismo",
+        "modalidad": "Curso con el experto",
+        "canal": "App · leer y escuchar"
+      },
+      "seguimiento": null
+    },
+    {
+      "id": "sm-435",
+      "codigo": "FLO-SM435",
+      "cuentaId": "u-pac-sm-435",
+      "idOriginal2022": 435,
+      "nombre": "Sandra Milena García Pinto",
+      "origenNombre": "Real · nombre y apellido",
+      "valorOriginalEnBase": "Sandra Milena Garcia Pinto",
+      "edad": 35,
+      "sexo": "Femenino",
+      "identidadGenero": "Femenino",
+      "estadoCivil": "Soltero(A)",
+      "estrato": 3,
+      "municipioBase2022": "Floridablanca",
+      "fechaRegistro2022": "2022-06-23",
+      "territorio": "FLO",
+      "expertoId": "u-exp-floridablanca",
+      "clinicoId": "u-cli-floridablanca",
+      "evaluacion": {
+        "fecha": "2026-09-10",
+        "duracionMin": 45,
+        "expertoId": "u-exp-floridablanca",
+        "phq9": [
+          1,
+          1,
+          2,
+          2,
+          1,
+          0,
+          0,
+          0,
+          0
+        ],
+        "digital": [
+          1,
+          1,
+          0,
+          1,
+          0,
+          0
+        ],
+        "contexto": {
+          "danoVivienda": 0,
+          "perdidaFamiliar": 0
+        }
+      },
+      "resultado": {
+        "phqTotal": 7,
+        "riesgo": "Leve",
+        "digitalTotal": 3,
+        "capacidadDigital": "Baja",
+        "notaFamiliar": "",
+        "perfil": "P04"
+      },
+      "flujo": {
+        "estado": "Activo",
+        "decisionClinica": {
+          "decision": "Aprobado",
+          "fecha": "2026-09-11",
+          "clinicoId": "u-cli-floridablanca",
+          "motivo": null
+        },
+        "alertaCrisis": null,
+        "proximoPaso": "Seguir la ruta; próxima revisión cada 4 semanas."
+      },
+      "consentimiento": {
+        "obligatorios": true,
+        "contacto": true,
+        "manilla": false,
+        "remision": false
+      },
+      "ruta": {
+        "duracionMeses": 3,
+        "servicios": [
+          {
+            "id": "call",
+            "servicio": "Llamada de seguimiento",
+            "frecuencia": "Mensual",
+            "canal": "Teléfono"
+          },
+          {
+            "id": "tech",
+            "servicio": "Técnicas guiadas",
+            "frecuencia": "Material impreso",
+            "canal": ""
+          },
+          {
+            "id": "revisit",
+            "servicio": "Revisita del experto",
+            "frecuencia": "Cada 2 semanas",
+            "canal": "Visita en casa"
+          },
+          {
+            "id": "group",
+            "servicio": "Grupo de apoyo en la vereda",
+            "frecuencia": "Mensual",
+            "canal": "En la vereda · con facilitador"
+          },
+          {
+            "id": "cursos",
+            "servicio": "Cursos y cuentos",
+            "frecuencia": "Curso con el experto",
+            "canal": "Cuadernillo impreso · audio en la visita"
+          }
+        ]
+      },
+      "curso": {
+        "id": "dormir",
+        "titulo": "Dormir mejor después del sismo",
+        "semanas": 4,
+        "motivo": "porque duerme mal desde el sismo",
+        "modalidad": "Curso con el experto",
+        "canal": "Cuadernillo impreso · audio en la visita"
+      },
+      "seguimiento": {
+        "ultimoContacto": "2026-10-06",
+        "canal": "Revisita del experto",
+        "adherenciaPct": 75,
+        "sinContacto": false
+      }
+    },
+    {
+      "id": "sm-434",
+      "codigo": "FLO-SM434",
+      "cuentaId": "u-pac-sm-434",
+      "idOriginal2022": 434,
+      "nombre": "Vanessa Castellanos",
+      "origenNombre": "Real · nombre y apellido",
+      "valorOriginalEnBase": "Vanessa Castellanos",
+      "edad": 21,
+      "sexo": "Femenino",
+      "identidadGenero": "Femenino",
+      "estadoCivil": "Soltero(A)",
+      "estrato": 2,
+      "municipioBase2022": "Floridablanca",
+      "fechaRegistro2022": "2022-06-23",
+      "territorio": "FLO",
+      "expertoId": "u-exp-floridablanca",
+      "clinicoId": "u-cli-floridablanca",
+      "evaluacion": {
+        "fecha": "2026-10-06",
+        "duracionMin": 29,
+        "expertoId": "u-exp-floridablanca",
+        "phq9": [
+          2,
+          2,
+          1,
+          2,
+          1,
+          1,
+          1,
+          1,
+          0
+        ],
+        "digital": [
+          2,
+          1,
+          1,
+          2,
+          1,
+          0
+        ],
+        "contexto": {
+          "danoVivienda": 0,
+          "perdidaFamiliar": 0
+        }
+      },
+      "resultado": {
+        "phqTotal": 11,
+        "riesgo": "Moderado",
+        "digitalTotal": 7,
+        "capacidadDigital": "Media",
+        "notaFamiliar": "",
+        "perfil": "P08"
+      },
+      "flujo": {
+        "estado": "Por aprobar",
+        "decisionClinica": {
+          "decision": "Pendiente",
+          "fecha": null,
+          "clinicoId": null,
+          "motivo": null
+        },
+        "alertaCrisis": null,
+        "proximoPaso": "El clínico del territorio aprueba o rechaza el perfil y la ruta."
+      },
+      "consentimiento": {
+        "obligatorios": true,
+        "contacto": true,
+        "manilla": true,
+        "remision": false
+      },
+      "ruta": {
+        "duracionMeses": 6,
+        "servicios": [
+          {
+            "id": "clin",
+            "servicio": "Psicólogo clínico",
+            "frecuencia": "Mensual",
+            "canal": "Por teléfono"
+          },
+          {
+            "id": "wa",
+            "servicio": "Check-ins por WhatsApp",
+            "frecuencia": "3 veces por semana",
+            "canal": "Audio primero"
+          },
+          {
+            "id": "bracelet",
+            "servicio": "Manilla de monitoreo",
+            "frecuencia": "6 meses",
+            "canal": "Sueño y ritmo cardiaco"
+          },
+          {
+            "id": "videos",
+            "servicio": "Videos psicoeducativos",
+            "frecuencia": "Serie completa",
+            "canal": ""
+          },
+          {
+            "id": "tech",
+            "servicio": "Técnicas guiadas",
+            "frecuencia": "En audio",
+            "canal": ""
+          },
+          {
+            "id": "pmplus",
+            "servicio": "Problem Management Plus (PM+)",
+            "frecuencia": "5 sesiones semanales",
+            "canal": "En casa · experto capacitado"
+          },
+          {
+            "id": "group",
+            "servicio": "Grupo de apoyo en la vereda",
+            "frecuencia": "Quincenal",
+            "canal": "En la vereda · con facilitador"
+          },
+          {
+            "id": "cursos",
+            "servicio": "Cursos y cuentos",
+            "frecuencia": "Curso con el experto",
+            "canal": "WhatsApp · portada, audio y pregunta"
+          }
+        ]
+      },
+      "curso": {
+        "id": "animo",
+        "titulo": "Ánimo, paso a paso",
+        "semanas": 4,
+        "motivo": "porque tiene el ánimo bajo",
+        "modalidad": "Curso con el experto",
+        "canal": "WhatsApp · portada, audio y pregunta"
+      },
+      "seguimiento": null
+    },
+    {
+      "id": "sm-365",
+      "codigo": "FLO-SM365",
+      "cuentaId": "u-pac-sm-365",
+      "idOriginal2022": 365,
+      "nombre": "Paula Pimienta",
+      "origenNombre": "Real · nombre y apellido",
+      "valorOriginalEnBase": "Paula Pimienta",
+      "edad": 28,
+      "sexo": "Femenino",
+      "identidadGenero": "Femenino",
+      "estadoCivil": "Soltero(A)",
+      "estrato": 4,
+      "municipioBase2022": "Floridablanca",
+      "fechaRegistro2022": "2022-06-17",
+      "territorio": "FLO",
+      "expertoId": "u-exp-floridablanca",
+      "clinicoId": "u-cli-floridablanca",
+      "evaluacion": {
+        "fecha": "2026-10-01",
+        "duracionMin": 52,
+        "expertoId": "u-exp-floridablanca",
+        "phq9": [
+          2,
+          3,
+          3,
+          2,
+          2,
+          2,
+          2,
+          2,
+          0
+        ],
+        "digital": [
+          2,
+          1,
+          2,
+          2,
+          2,
+          1
+        ],
+        "contexto": {
+          "danoVivienda": 0,
+          "perdidaFamiliar": 0
+        }
+      },
+      "resultado": {
+        "phqTotal": 18,
+        "riesgo": "Moderado-severo",
+        "digitalTotal": 10,
+        "capacidadDigital": "Alta",
+        "notaFamiliar": "Tiene apoyo de un familiar con el celular.",
+        "perfil": "P12"
+      },
+      "flujo": {
+        "estado": "Activo",
+        "decisionClinica": {
+          "decision": "Aprobado",
+          "fecha": "2026-10-02",
+          "clinicoId": "u-cli-floridablanca",
+          "motivo": null
+        },
+        "alertaCrisis": null,
+        "proximoPaso": "Seguir la ruta; próxima revisión cada 4 semanas."
+      },
+      "consentimiento": {
+        "obligatorios": true,
+        "contacto": true,
+        "manilla": true,
+        "remision": true
+      },
+      "ruta": {
+        "duracionMeses": 12,
+        "servicios": [
+          {
+            "id": "mood",
+            "servicio": "Estado de ánimo",
+            "frecuencia": "Diario",
+            "canal": "App · check-in diario"
+          },
+          {
+            "id": "clin",
+            "servicio": "Psicólogo clínico",
+            "frecuencia": "Quincenal",
+            "canal": "Videollamada o teléfono"
+          },
+          {
+            "id": "ia",
+            "servicio": "Acompañante con IA (TEO)",
+            "frecuencia": "Entre sesiones",
+            "canal": "App"
+          },
+          {
+            "id": "wa",
+            "servicio": "Check-ins por WhatsApp",
+            "frecuencia": "3 veces por semana",
+            "canal": "Audio primero"
+          },
+          {
+            "id": "bracelet",
+            "servicio": "Manilla de monitoreo",
+            "frecuencia": "12 meses",
+            "canal": "Sueño y ritmo cardiaco"
+          },
+          {
+            "id": "videos",
+            "servicio": "Videos psicoeducativos",
+            "frecuencia": "Serie completa",
+            "canal": ""
+          },
+          {
+            "id": "tech",
+            "servicio": "Técnicas guiadas",
+            "frecuencia": "En audio",
+            "canal": ""
+          },
+          {
+            "id": "revisit",
+            "servicio": "Revisita del experto",
+            "frecuencia": "Cada 2 semanas",
+            "canal": "Visita en casa"
+          },
+          {
+            "id": "pmplus",
+            "servicio": "Problem Management Plus (PM+)",
+            "frecuencia": "5 sesiones semanales",
+            "canal": "En casa · experto capacitado"
+          },
+          {
+            "id": "cursos",
+            "servicio": "Cursos y cuentos",
+            "frecuencia": "Asignado por la psicóloga",
+            "canal": "App · leer y escuchar"
+          }
+        ]
+      },
+      "curso": {
+        "id": "dormir",
+        "titulo": "Dormir mejor después del sismo",
+        "semanas": 4,
+        "motivo": "porque duerme mal desde el sismo",
+        "modalidad": "Asignado por la psicóloga",
+        "canal": "App · leer y escuchar"
+      },
+      "seguimiento": {
+        "ultimoContacto": "2026-10-07",
+        "canal": "Ingreso a la app",
+        "adherenciaPct": 90,
+        "sinContacto": false
+      }
+    },
+    {
+      "id": "sm-347",
+      "codigo": "BOG-SM347",
+      "cuentaId": "u-pac-sm-347",
+      "idOriginal2022": 347,
+      "nombre": "Ana Rojas",
+      "origenNombre": "Derivado del usuario",
+      "valorOriginalEnBase": "anarojas93@yahoo.es",
+      "edad": 57,
+      "sexo": "Femenino",
+      "identidadGenero": "Femenino",
+      "estadoCivil": "Divorciado(A)",
+      "estrato": 3,
+      "municipioBase2022": "Bogotá",
+      "fechaRegistro2022": "2022-06-16",
+      "territorio": "BOG",
+      "expertoId": "u-exp-bogota",
+      "clinicoId": "umuvzhvkb",
+      "evaluacion": {
+        "fecha": "2026-09-15",
+        "duracionMin": 48,
+        "expertoId": "u-exp-bogota",
+        "phq9": [
+          2,
+          2,
+          2,
+          2,
+          1,
+          1,
+          1,
+          1,
+          0
+        ],
+        "digital": [
+          1,
+          1,
+          1,
+          0,
+          1,
+          0
+        ],
+        "contexto": {
+          "danoVivienda": 0,
+          "perdidaFamiliar": 0
+        }
+      },
+      "resultado": {
+        "phqTotal": 12,
+        "riesgo": "Moderado",
+        "digitalTotal": 4,
+        "capacidadDigital": "Baja",
+        "notaFamiliar": "",
+        "perfil": "P07"
+      },
+      "flujo": {
+        "estado": "Activo",
+        "decisionClinica": {
+          "decision": "Aprobado",
+          "fecha": "2026-09-16",
+          "clinicoId": "umuvzhvkb",
+          "motivo": null
+        },
+        "alertaCrisis": null,
+        "proximoPaso": "Seguir la ruta; próxima revisión cada 4 semanas."
+      },
+      "consentimiento": {
+        "obligatorios": true,
+        "contacto": true,
+        "manilla": true,
+        "remision": false
+      },
+      "ruta": {
+        "duracionMeses": 6,
+        "servicios": [
+          {
+            "id": "clin",
+            "servicio": "Psicólogo clínico",
+            "frecuencia": "Mensual",
+            "canal": "En persona"
+          },
+          {
+            "id": "call",
+            "servicio": "Llamada de seguimiento",
+            "frecuencia": "Semanal",
+            "canal": "Teléfono"
+          },
+          {
+            "id": "bracelet",
+            "servicio": "Manilla de monitoreo",
+            "frecuencia": "6 meses",
+            "canal": "Sueño y ritmo cardiaco"
+          },
+          {
+            "id": "tech",
+            "servicio": "Técnicas guiadas",
+            "frecuencia": "Material impreso",
+            "canal": ""
+          },
+          {
+            "id": "revisit",
+            "servicio": "Revisita del experto",
+            "frecuencia": "Cada 2 semanas",
+            "canal": "Visita en casa"
+          },
+          {
+            "id": "pmplus",
+            "servicio": "Problem Management Plus (PM+)",
+            "frecuencia": "5 sesiones semanales",
+            "canal": "En casa · experto capacitado"
+          },
+          {
+            "id": "group",
+            "servicio": "Grupo de apoyo en la vereda",
+            "frecuencia": "Quincenal",
+            "canal": "En la vereda · con facilitador"
+          },
+          {
+            "id": "cursos",
+            "servicio": "Cursos y cuentos",
+            "frecuencia": "Curso con el experto",
+            "canal": "Cuadernillo impreso · audio en la visita"
+          }
+        ]
+      },
+      "curso": {
+        "id": "dormir",
+        "titulo": "Dormir mejor después del sismo",
+        "semanas": 4,
+        "motivo": "porque duerme mal desde el sismo",
+        "modalidad": "Curso con el experto",
+        "canal": "Cuadernillo impreso · audio en la visita"
+      },
+      "seguimiento": {
+        "ultimoContacto": "2026-09-20",
+        "canal": "Llamada de seguimiento",
+        "adherenciaPct": 45,
+        "sinContacto": true
+      }
+    },
+    {
+      "id": "sm-321",
+      "codigo": "BOG-SM321",
+      "cuentaId": "u-pac-sm-321",
+      "idOriginal2022": 321,
+      "nombre": "Julieth",
+      "origenNombre": "Derivado del usuario",
+      "valorOriginalEnBase": "juliethz",
+      "edad": 31,
+      "sexo": "Femenino",
+      "identidadGenero": "Femenino",
+      "estadoCivil": "Unión Libre",
+      "estrato": 2,
+      "municipioBase2022": "Bogota",
+      "fechaRegistro2022": "2022-06-12",
+      "territorio": "BOG",
+      "expertoId": "u-exp-bogota",
+      "clinicoId": "umuvzhvkb",
+      "evaluacion": {
+        "fecha": "2026-10-03",
+        "duracionMin": 23,
+        "expertoId": "u-exp-bogota",
+        "phq9": [
+          3,
+          2,
+          1,
+          2,
+          2,
+          2,
+          2,
+          2,
+          0
+        ],
+        "digital": [
+          2,
+          2,
+          1,
+          1,
+          2,
+          0
+        ],
+        "contexto": {
+          "danoVivienda": 0,
+          "perdidaFamiliar": 0
+        }
+      },
+      "resultado": {
+        "phqTotal": 16,
+        "riesgo": "Moderado-severo",
+        "digitalTotal": 8,
+        "capacidadDigital": "Media",
+        "notaFamiliar": "",
+        "perfil": "P11"
+      },
+      "flujo": {
+        "estado": "Rechazado",
+        "decisionClinica": {
+          "decision": "Rechazado",
+          "fecha": "2026-10-05",
+          "clinicoId": "umuvzhvkb",
+          "motivo": "Las respuestas del PHQ-9 no coinciden con lo que cuenta la persona en la entrevista. Repetir la evaluación."
+        },
+        "alertaCrisis": null,
+        "proximoPaso": "El experto repite la entrevista."
+      },
+      "consentimiento": {
+        "obligatorios": true,
+        "contacto": true,
+        "manilla": true,
+        "remision": true
+      },
+      "ruta": null,
+      "rutaPropuesta": {
+        "duracionMeses": 12,
+        "servicios": [
+          {
+            "id": "clin",
+            "servicio": "Psicólogo clínico",
+            "frecuencia": "Quincenal",
+            "canal": "Por teléfono"
+          },
+          {
+            "id": "wa",
+            "servicio": "Check-ins por WhatsApp",
+            "frecuencia": "3 veces por semana",
+            "canal": "Audio primero"
+          },
+          {
+            "id": "bracelet",
+            "servicio": "Manilla de monitoreo",
+            "frecuencia": "12 meses",
+            "canal": "Sueño y ritmo cardiaco"
+          },
+          {
+            "id": "videos",
+            "servicio": "Videos psicoeducativos",
+            "frecuencia": "Serie completa",
+            "canal": ""
+          },
+          {
+            "id": "tech",
+            "servicio": "Técnicas guiadas",
+            "frecuencia": "En audio",
+            "canal": ""
+          },
+          {
+            "id": "revisit",
+            "servicio": "Revisita del experto",
+            "frecuencia": "Cada 2 semanas",
+            "canal": "Visita en casa"
+          },
+          {
+            "id": "pmplus",
+            "servicio": "Problem Management Plus (PM+)",
+            "frecuencia": "5 sesiones semanales",
+            "canal": "En casa · experto capacitado"
+          },
+          {
+            "id": "group",
+            "servicio": "Grupo de apoyo en la vereda",
+            "frecuencia": "Quincenal",
+            "canal": "En la vereda · con facilitador"
+          },
+          {
+            "id": "cursos",
+            "servicio": "Cursos y cuentos",
+            "frecuencia": "Asignado por la psicóloga",
+            "canal": "WhatsApp · portada, audio y pregunta"
+          }
+        ]
+      },
+      "curso": {
+        "id": "animo",
+        "titulo": "Ánimo, paso a paso",
+        "semanas": 4,
+        "motivo": "porque tiene el ánimo bajo",
+        "modalidad": "Asignado por la psicóloga",
+        "canal": "WhatsApp · portada, audio y pregunta"
+      },
+      "seguimiento": null
+    },
+    {
+      "id": "sm-237",
+      "codigo": "BOG-SM237",
+      "cuentaId": "u-pac-sm-237",
+      "idOriginal2022": 237,
+      "nombre": "Isabel",
+      "origenNombre": "Derivado del usuario",
+      "valorOriginalEnBase": "Isabelhdezb",
+      "edad": 27,
+      "sexo": "Femenino",
+      "identidadGenero": "Femenino",
+      "estadoCivil": "Soltero(A)",
+      "estrato": 5,
+      "municipioBase2022": "Bogotá",
+      "fechaRegistro2022": "2022-06-08",
+      "territorio": "BOG",
+      "expertoId": "u-exp-bogota",
+      "clinicoId": "umuvzhvkb",
+      "evaluacion": {
+        "fecha": "2026-10-07",
+        "duracionMin": 55,
+        "expertoId": "u-exp-bogota",
+        "phq9": [
+          3,
+          3,
+          3,
+          3,
+          2,
+          3,
+          2,
+          2,
+          0
+        ],
+        "digital": [
+          2,
+          2,
+          2,
+          2,
+          2,
+          0
+        ],
+        "contexto": {
+          "danoVivienda": 0,
+          "perdidaFamiliar": 0
+        }
+      },
+      "resultado": {
+        "phqTotal": 21,
+        "riesgo": "Severo",
+        "digitalTotal": 10,
+        "capacidadDigital": "Alta",
+        "notaFamiliar": "",
+        "perfil": "P15"
+      },
+      "flujo": {
+        "estado": "Por aprobar",
+        "decisionClinica": {
+          "decision": "Pendiente",
+          "fecha": null,
+          "clinicoId": null,
+          "motivo": null
+        },
+        "alertaCrisis": null,
+        "proximoPaso": "El clínico del territorio aprueba o rechaza el perfil y la ruta."
+      },
+      "consentimiento": {
+        "obligatorios": true,
+        "contacto": true,
+        "manilla": true,
+        "remision": true
+      },
+      "ruta": {
+        "duracionMeses": 12,
+        "servicios": [
+          {
+            "id": "mood",
+            "servicio": "Estado de ánimo",
+            "frecuencia": "Diario",
+            "canal": "App · check-in diario"
+          },
+          {
+            "id": "clin",
+            "servicio": "Psicólogo clínico",
+            "frecuencia": "Semanal",
+            "canal": "Videollamada o teléfono"
+          },
+          {
+            "id": "wa",
+            "servicio": "Check-ins por WhatsApp",
+            "frecuencia": "3 veces por semana",
+            "canal": "Audio primero"
+          },
+          {
+            "id": "bracelet",
+            "servicio": "Manilla de monitoreo",
+            "frecuencia": "12 meses",
+            "canal": "Sueño y ritmo cardiaco"
+          },
+          {
+            "id": "videos",
+            "servicio": "Videos psicoeducativos",
+            "frecuencia": "Serie completa",
+            "canal": ""
+          },
+          {
+            "id": "tech",
+            "servicio": "Técnicas guiadas",
+            "frecuencia": "En audio",
+            "canal": ""
+          },
+          {
+            "id": "revisit",
+            "servicio": "Revisita del experto",
+            "frecuencia": "Cada 2 semanas",
+            "canal": "Visita en casa"
+          },
+          {
+            "id": "cursos",
+            "servicio": "Cursos y cuentos",
+            "frecuencia": "Asignado por la psicóloga",
+            "canal": "App · leer y escuchar"
+          }
+        ]
+      },
+      "curso": {
+        "id": "dormir",
+        "titulo": "Dormir mejor después del sismo",
+        "semanas": 4,
+        "motivo": "porque duerme mal desde el sismo",
+        "modalidad": "Asignado por la psicóloga",
+        "canal": "App · leer y escuchar"
+      },
+      "seguimiento": null
+    },
+    {
+      "id": "sm-352",
+      "codigo": "CAL-SM352",
+      "cuentaId": "u-pac-sm-352",
+      "idOriginal2022": 352,
+      "nombre": "Lorena Lasso",
+      "origenNombre": "Real · nombre y apellido",
+      "valorOriginalEnBase": "Lorena lasso",
+      "edad": 32,
+      "sexo": "Femenino",
+      "identidadGenero": "Femenino",
+      "estadoCivil": "Unión Libre",
+      "estrato": 1,
+      "municipioBase2022": "Cali",
+      "fechaRegistro2022": "2022-06-16",
+      "territorio": "CAL",
+      "expertoId": "u-exp-cali",
+      "clinicoId": "u-cli-cali",
+      "evaluacion": {
+        "fecha": "2026-10-02",
+        "duracionMin": 47,
+        "expertoId": "u-exp-cali",
+        "phq9": [
+          2,
+          2,
+          3,
+          2,
+          2,
+          2,
+          2,
+          2,
+          0
+        ],
+        "digital": [
+          1,
+          0,
+          1,
+          1,
+          1,
+          0
+        ],
+        "contexto": {
+          "danoVivienda": 0,
+          "perdidaFamiliar": 0
+        }
+      },
+      "resultado": {
+        "phqTotal": 17,
+        "riesgo": "Moderado-severo",
+        "digitalTotal": 4,
+        "capacidadDigital": "Baja",
+        "notaFamiliar": "",
+        "perfil": "P10"
+      },
+      "flujo": {
+        "estado": "Aprobado",
+        "decisionClinica": {
+          "decision": "Aprobado",
+          "fecha": "2026-10-03",
+          "clinicoId": "u-cli-cali",
+          "motivo": null
+        },
+        "alertaCrisis": null,
+        "proximoPaso": "Primer contacto de la ruta dentro de 7 días."
+      },
+      "consentimiento": {
+        "obligatorios": true,
+        "contacto": true,
+        "manilla": true,
+        "remision": true
+      },
+      "ruta": {
+        "duracionMeses": 12,
+        "servicios": [
+          {
+            "id": "clin",
+            "servicio": "Psicólogo clínico",
+            "frecuencia": "Quincenal",
+            "canal": "En persona"
+          },
+          {
+            "id": "call",
+            "servicio": "Llamada de seguimiento",
+            "frecuencia": "Semanal",
+            "canal": "Teléfono"
+          },
+          {
+            "id": "bracelet",
+            "servicio": "Manilla de monitoreo",
+            "frecuencia": "12 meses",
+            "canal": "Sueño y ritmo cardiaco"
+          },
+          {
+            "id": "tech",
+            "servicio": "Técnicas guiadas",
+            "frecuencia": "Material impreso",
+            "canal": ""
+          },
+          {
+            "id": "revisit",
+            "servicio": "Revisita del experto",
+            "frecuencia": "Cada 2 semanas",
+            "canal": "Visita en casa"
+          },
+          {
+            "id": "pmplus",
+            "servicio": "Problem Management Plus (PM+)",
+            "frecuencia": "5 sesiones semanales",
+            "canal": "En casa · experto capacitado"
+          },
+          {
+            "id": "group",
+            "servicio": "Grupo de apoyo en la vereda",
+            "frecuencia": "Quincenal",
+            "canal": "En la vereda · con facilitador"
+          },
+          {
+            "id": "cursos",
+            "servicio": "Cursos y cuentos",
+            "frecuencia": "Asignado por la psicóloga",
+            "canal": "Cuadernillo impreso · audio en la visita"
+          }
+        ]
+      },
+      "curso": {
+        "id": "dormir",
+        "titulo": "Dormir mejor después del sismo",
+        "semanas": 4,
+        "motivo": "porque duerme mal desde el sismo",
+        "modalidad": "Asignado por la psicóloga",
+        "canal": "Cuadernillo impreso · audio en la visita"
+      },
+      "seguimiento": null
+    },
+    {
+      "id": "sm-182",
+      "codigo": "CAL-SM182",
+      "cuentaId": "u-pac-sm-182",
+      "idOriginal2022": 182,
+      "nombre": "Andrés",
+      "origenNombre": "Real · solo nombre",
+      "valorOriginalEnBase": "Andres",
+      "edad": 29,
+      "sexo": "Masculino",
+      "identidadGenero": "Masculino",
+      "estadoCivil": "Soltero(A)",
+      "estrato": 2,
+      "municipioBase2022": "Cali",
+      "fechaRegistro2022": "2022-06-03",
+      "territorio": "CAL",
+      "expertoId": "u-exp-cali",
+      "clinicoId": "u-cli-cali",
+      "evaluacion": {
+        "fecha": "2026-09-12",
+        "duracionMin": 50,
+        "expertoId": "u-exp-cali",
+        "phq9": [
+          3,
+          3,
+          2,
+          3,
+          3,
+          3,
+          3,
+          3,
+          0
+        ],
+        "digital": [
+          1,
+          1,
+          1,
+          1,
+          1,
+          1
+        ],
+        "contexto": {
+          "danoVivienda": 0,
+          "perdidaFamiliar": 0
+        }
+      },
+      "resultado": {
+        "phqTotal": 23,
+        "riesgo": "Severo",
+        "digitalTotal": 6,
+        "capacidadDigital": "Media",
+        "notaFamiliar": "Tiene apoyo de un familiar con el celular.",
+        "perfil": "P14"
+      },
+      "flujo": {
+        "estado": "Crisis",
+        "decisionClinica": {
+          "decision": "Aprobado",
+          "fecha": "2026-09-13",
+          "clinicoId": "u-cli-cali",
+          "motivo": null
+        },
+        "alertaCrisis": {
+          "estado": "Abierta",
+          "origen": "Escribió AYUDA por WhatsApp",
+          "fechaHora": "2026-10-08T08:15",
+          "clinicoId": "u-cli-cali"
+        },
+        "proximoPaso": "El clínico toma la alerta y llama en menos de 30 minutos; revisita del experto en 48 h."
+      },
+      "consentimiento": {
+        "obligatorios": true,
+        "contacto": true,
+        "manilla": true,
+        "remision": true
+      },
+      "ruta": {
+        "duracionMeses": 12,
+        "servicios": [
+          {
+            "id": "clin",
+            "servicio": "Psicólogo clínico",
+            "frecuencia": "Semanal",
+            "canal": "Por teléfono"
+          },
+          {
+            "id": "wa",
+            "servicio": "Check-ins por WhatsApp",
+            "frecuencia": "3 veces por semana",
+            "canal": "Audio primero"
+          },
+          {
+            "id": "bracelet",
+            "servicio": "Manilla de monitoreo",
+            "frecuencia": "12 meses",
+            "canal": "Sueño y ritmo cardiaco"
+          },
+          {
+            "id": "videos",
+            "servicio": "Videos psicoeducativos",
+            "frecuencia": "Serie completa",
+            "canal": ""
+          },
+          {
+            "id": "tech",
+            "servicio": "Técnicas guiadas",
+            "frecuencia": "En audio",
+            "canal": ""
+          },
+          {
+            "id": "revisit",
+            "servicio": "Revisita del experto",
+            "frecuencia": "Cada 2 semanas",
+            "canal": "Visita en casa"
+          },
+          {
+            "id": "cursos",
+            "servicio": "Cursos y cuentos",
+            "frecuencia": "Asignado por la psicóloga",
+            "canal": "WhatsApp · portada, audio y pregunta"
+          }
+        ]
+      },
+      "curso": {
+        "id": "dormir",
+        "titulo": "Dormir mejor después del sismo",
+        "semanas": 4,
+        "motivo": "porque duerme mal desde el sismo",
+        "modalidad": "Asignado por la psicóloga",
+        "canal": "WhatsApp · portada, audio y pregunta"
+      },
+      "seguimiento": {
+        "ultimoContacto": "2026-10-08",
+        "canal": "WhatsApp · escribió AYUDA",
+        "adherenciaPct": 64,
+        "sinContacto": false
+      }
+    },
+    {
+      "id": "sm-204",
+      "codigo": "CAL-SM204",
+      "cuentaId": "u-pac-sm-204",
+      "idOriginal2022": 204,
+      "nombre": "Yessenia Coime",
+      "origenNombre": "Real · nombre y apellido",
+      "valorOriginalEnBase": "Yessenia coime",
+      "edad": 19,
+      "sexo": "Femenino",
+      "identidadGenero": "Femenino",
+      "estadoCivil": "Soltero(A)",
+      "estrato": 1,
+      "municipioBase2022": "Cali",
+      "fechaRegistro2022": "2022-06-06",
+      "territorio": "CAL",
+      "expertoId": "u-exp-cali",
+      "clinicoId": "u-cli-cali",
+      "evaluacion": {
+        "fecha": "2026-10-07",
+        "duracionMin": 27,
+        "expertoId": "u-exp-cali",
+        "phq9": [
+          0,
+          0,
+          2,
+          1,
+          0,
+          0,
+          1,
+          0,
+          0
+        ],
+        "digital": [
+          2,
+          2,
+          2,
+          2,
+          2,
+          1
+        ],
+        "contexto": {
+          "danoVivienda": 0,
+          "perdidaFamiliar": 0
+        }
+      },
+      "resultado": {
+        "phqTotal": 4,
+        "riesgo": "Mínimo",
+        "digitalTotal": 11,
+        "capacidadDigital": "Alta",
+        "notaFamiliar": "Tiene apoyo de un familiar con el celular.",
+        "perfil": "P03"
+      },
+      "flujo": {
+        "estado": "Por aprobar",
+        "decisionClinica": {
+          "decision": "Pendiente",
+          "fecha": null,
+          "clinicoId": null,
+          "motivo": null
+        },
+        "alertaCrisis": null,
+        "proximoPaso": "El clínico del territorio aprueba o rechaza el perfil y la ruta."
+      },
+      "consentimiento": {
+        "obligatorios": true,
+        "contacto": true,
+        "manilla": false,
+        "remision": false
+      },
+      "ruta": {
+        "duracionMeses": 3,
+        "servicios": [
+          {
+            "id": "mood",
+            "servicio": "Estado de ánimo",
+            "frecuencia": "Diario",
+            "canal": "App · check-in diario"
+          },
+          {
+            "id": "ia",
+            "servicio": "Acompañante con IA (TEO)",
+            "frecuencia": "Acceso libre",
+            "canal": "App"
+          },
+          {
+            "id": "wa",
+            "servicio": "Check-ins por WhatsApp",
+            "frecuencia": "1 vez por semana",
+            "canal": "Audio primero"
+          },
+          {
+            "id": "videos",
+            "servicio": "Videos psicoeducativos",
+            "frecuencia": "Serie completa",
+            "canal": ""
+          },
+          {
+            "id": "tech",
+            "servicio": "Técnicas guiadas",
+            "frecuencia": "En audio",
+            "canal": ""
+          },
+          {
+            "id": "cursos",
+            "servicio": "Cursos y cuentos",
+            "frecuencia": "Curso guiado por TEO",
+            "canal": "App · leer y escuchar"
+          }
+        ]
+      },
+      "curso": {
+        "id": "dormir",
+        "titulo": "Dormir mejor después del sismo",
+        "semanas": 4,
+        "motivo": "porque duerme mal desde el sismo",
+        "modalidad": "Curso guiado por TEO",
+        "canal": "App · leer y escuchar"
+      },
+      "seguimiento": null
+    },
+    {
+      "id": "sm-124",
+      "codigo": "BAR-SM124",
+      "cuentaId": "u-pac-sm-124",
+      "idOriginal2022": 124,
+      "nombre": "Neil",
+      "origenNombre": "Derivado del usuario",
+      "valorOriginalEnBase": "Neil0909",
+      "edad": 40,
+      "sexo": "Masculino",
+      "identidadGenero": "Masculino",
+      "estadoCivil": "Divorciado(A)",
+      "estrato": 1,
+      "municipioBase2022": "Barranquilla",
+      "fechaRegistro2022": "2022-05-25",
+      "territorio": "BAR",
+      "expertoId": "u-exp-barranquilla",
+      "clinicoId": "u-cli-barranquilla",
+      "evaluacion": {
+        "fecha": "2026-10-07",
+        "duracionMin": 35,
+        "expertoId": "u-exp-barranquilla",
+        "phq9": [
+          3,
+          3,
+          3,
+          3,
+          2,
+          3,
+          2,
+          2,
+          1
+        ],
+        "digital": [
+          1,
+          1,
+          0,
+          0,
+          0,
+          1
+        ],
+        "contexto": {
+          "danoVivienda": 0,
+          "perdidaFamiliar": 0
+        }
+      },
+      "resultado": {
+        "phqTotal": 22,
+        "riesgo": "Severo",
+        "digitalTotal": 3,
+        "capacidadDigital": "Baja",
+        "notaFamiliar": "Tiene apoyo de un familiar con el celular.",
+        "perfil": "P13"
+      },
+      "flujo": {
+        "estado": "Crisis",
+        "decisionClinica": {
+          "decision": "Pendiente",
+          "fecha": null,
+          "clinicoId": null,
+          "motivo": null
+        },
+        "alertaCrisis": {
+          "estado": "Abierta",
+          "origen": "Pregunta 9 mayor que 0 en la visita",
+          "fechaHora": "2026-10-07T10:40",
+          "clinicoId": "u-cli-barranquilla"
+        },
+        "proximoPaso": "El clínico toma la alerta y llama en menos de 30 minutos; revisita del experto en 48 h."
+      },
+      "consentimiento": {
+        "obligatorios": true,
+        "contacto": true,
+        "manilla": true,
+        "remision": true
+      },
+      "ruta": {
+        "duracionMeses": 12,
+        "servicios": [
+          {
+            "id": "clin",
+            "servicio": "Psicólogo clínico",
+            "frecuencia": "Semanal",
+            "canal": "En persona"
+          },
+          {
+            "id": "call",
+            "servicio": "Llamada de seguimiento",
+            "frecuencia": "Semanal",
+            "canal": "Teléfono"
+          },
+          {
+            "id": "bracelet",
+            "servicio": "Manilla de monitoreo",
+            "frecuencia": "12 meses",
+            "canal": "Sueño y ritmo cardiaco"
+          },
+          {
+            "id": "tech",
+            "servicio": "Técnicas guiadas",
+            "frecuencia": "Material impreso",
+            "canal": ""
+          },
+          {
+            "id": "revisit",
+            "servicio": "Revisita del experto",
+            "frecuencia": "Cada 2 semanas",
+            "canal": "Visita en casa"
+          },
+          {
+            "id": "cursos",
+            "servicio": "Cursos y cuentos",
+            "frecuencia": "Asignado por la psicóloga",
+            "canal": "Cuadernillo impreso · audio en la visita"
+          }
+        ]
+      },
+      "curso": {
+        "id": "dormir",
+        "titulo": "Dormir mejor después del sismo",
+        "semanas": 4,
+        "motivo": "porque duerme mal desde el sismo",
+        "modalidad": "Asignado por la psicóloga",
+        "canal": "Cuadernillo impreso · audio en la visita"
+      },
+      "seguimiento": null
+    },
+    {
+      "id": "sm-351",
+      "codigo": "BAR-SM351",
+      "cuentaId": "u-pac-sm-351",
+      "idOriginal2022": 351,
+      "nombre": "Mariluz",
+      "origenNombre": "Real · solo nombre",
+      "valorOriginalEnBase": "Mariluz",
+      "edad": 20,
+      "sexo": "Femenino",
+      "identidadGenero": "Femenino",
+      "estadoCivil": "Unión Libre",
+      "estrato": 1,
+      "municipioBase2022": "Barranquilla",
+      "fechaRegistro2022": "2022-06-16",
+      "territorio": "BAR",
+      "expertoId": "u-exp-barranquilla",
+      "clinicoId": "u-cli-barranquilla",
+      "evaluacion": {
+        "fecha": "2026-09-17",
+        "duracionMin": 33,
+        "expertoId": "u-exp-barranquilla",
+        "phq9": [
+          0,
+          0,
+          1,
+          1,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "digital": [
+          2,
+          1,
+          1,
+          1,
+          1,
+          0
+        ],
+        "contexto": {
+          "danoVivienda": 0,
+          "perdidaFamiliar": 0
+        }
+      },
+      "resultado": {
+        "phqTotal": 2,
+        "riesgo": "Mínimo",
+        "digitalTotal": 6,
+        "capacidadDigital": "Media",
+        "notaFamiliar": "",
+        "perfil": "P02"
+      },
+      "flujo": {
+        "estado": "Activo",
+        "decisionClinica": {
+          "decision": "Aprobado",
+          "fecha": "2026-09-18",
+          "clinicoId": "u-cli-barranquilla",
+          "motivo": null
+        },
+        "alertaCrisis": null,
+        "proximoPaso": "Seguir la ruta; próxima revisión cada 4 semanas."
+      },
+      "consentimiento": {
+        "obligatorios": true,
+        "contacto": true,
+        "manilla": false,
+        "remision": false
+      },
+      "ruta": {
+        "duracionMeses": 3,
+        "servicios": [
+          {
+            "id": "wa",
+            "servicio": "Check-ins por WhatsApp",
+            "frecuencia": "1 vez por semana",
+            "canal": "Audio primero"
+          },
+          {
+            "id": "videos",
+            "servicio": "Videos psicoeducativos",
+            "frecuencia": "Serie completa",
+            "canal": ""
+          },
+          {
+            "id": "tech",
+            "servicio": "Técnicas guiadas",
+            "frecuencia": "En audio",
+            "canal": ""
+          },
+          {
+            "id": "group",
+            "servicio": "Grupo de apoyo en la vereda",
+            "frecuencia": "Mensual",
+            "canal": "En la vereda · con facilitador"
+          },
+          {
+            "id": "cursos",
+            "servicio": "Cursos y cuentos",
+            "frecuencia": "Curso guiado por TEO",
+            "canal": "WhatsApp · portada, audio y pregunta"
+          }
+        ]
+      },
+      "curso": {
+        "id": "calma",
+        "titulo": "Calma cuando tiembla",
+        "semanas": 4,
+        "motivo": "para manejar el miedo y el estrés",
+        "modalidad": "Curso guiado por TEO",
+        "canal": "WhatsApp · portada, audio y pregunta"
+      },
+      "seguimiento": {
+        "ultimoContacto": "2026-10-07",
+        "canal": "Check-in por WhatsApp",
+        "adherenciaPct": 88,
+        "sinContacto": false
+      }
+    },
+    {
+      "id": "sm-300",
+      "codigo": "BAR-SM300",
+      "cuentaId": "u-pac-sm-300",
+      "idOriginal2022": 300,
+      "nombre": "Andreina",
+      "origenNombre": "Real · solo nombre",
+      "valorOriginalEnBase": "Andreina",
+      "edad": 24,
+      "sexo": "Femenino",
+      "identidadGenero": "Femenino",
+      "estadoCivil": "Soltero(A)",
+      "estrato": 1,
+      "municipioBase2022": "Barranquilla",
+      "fechaRegistro2022": "2022-06-11",
+      "territorio": "BAR",
+      "expertoId": "u-exp-barranquilla",
+      "clinicoId": "u-cli-barranquilla",
+      "evaluacion": {
+        "fecha": "2026-10-06",
+        "duracionMin": 31,
+        "expertoId": "u-exp-barranquilla",
+        "phq9": [
+          1,
+          1,
+          1,
+          2,
+          0,
+          0,
+          1,
+          0,
+          0
+        ],
+        "digital": [
+          2,
+          2,
+          2,
+          2,
+          1,
+          0
+        ],
+        "contexto": {
+          "danoVivienda": 0,
+          "perdidaFamiliar": 0
+        }
+      },
+      "resultado": {
+        "phqTotal": 6,
+        "riesgo": "Leve",
+        "digitalTotal": 9,
+        "capacidadDigital": "Alta",
+        "notaFamiliar": "",
+        "perfil": "P06"
+      },
+      "flujo": {
+        "estado": "Por aprobar",
+        "decisionClinica": {
+          "decision": "Pendiente",
+          "fecha": null,
+          "clinicoId": null,
+          "motivo": null
+        },
+        "alertaCrisis": null,
+        "proximoPaso": "El clínico del territorio aprueba o rechaza el perfil y la ruta."
+      },
+      "consentimiento": {
+        "obligatorios": true,
+        "contacto": true,
+        "manilla": false,
+        "remision": false
+      },
+      "ruta": {
+        "duracionMeses": 3,
+        "servicios": [
+          {
+            "id": "mood",
+            "servicio": "Estado de ánimo",
+            "frecuencia": "Diario",
+            "canal": "App · check-in diario"
+          },
+          {
+            "id": "ia",
+            "servicio": "Acompañante con IA (TEO)",
+            "frecuencia": "Acceso libre",
+            "canal": "App"
+          },
+          {
+            "id": "wa",
+            "servicio": "Check-ins por WhatsApp",
+            "frecuencia": "1 vez por semana",
+            "canal": "Audio primero"
+          },
+          {
+            "id": "videos",
+            "servicio": "Videos psicoeducativos",
+            "frecuencia": "Serie completa",
+            "canal": ""
+          },
+          {
+            "id": "tech",
+            "servicio": "Técnicas guiadas",
+            "frecuencia": "En audio",
+            "canal": ""
+          },
+          {
+            "id": "revisit",
+            "servicio": "Revisita del experto",
+            "frecuencia": "Mensual",
+            "canal": "Visita en casa"
+          },
+          {
+            "id": "cursos",
+            "servicio": "Cursos y cuentos",
+            "frecuencia": "Curso guiado por TEO",
+            "canal": "App · leer y escuchar"
+          }
+        ]
+      },
+      "curso": {
+        "id": "calma",
+        "titulo": "Calma cuando tiembla",
+        "semanas": 4,
+        "motivo": "para manejar el miedo y el estrés",
+        "modalidad": "Curso guiado por TEO",
+        "canal": "App · leer y escuchar"
+      },
+      "seguimiento": null
+    },
+    {
+      "id": "sm-327",
+      "codigo": "BUC-SM327",
+      "cuentaId": "u-pac-sm-327",
+      "idOriginal2022": 327,
+      "nombre": "Beatriz Elena Ramírez Coronado",
+      "origenNombre": "Real · nombre y apellido",
+      "valorOriginalEnBase": "BEATRIZ ELENA RAMIREZ CORONADO",
+      "edad": 32,
+      "sexo": "Femenino",
+      "identidadGenero": "Femenino",
+      "estadoCivil": "Soltero(A)",
+      "estrato": 2,
+      "municipioBase2022": "Bucaramanga",
+      "fechaRegistro2022": "2022-06-13",
+      "territorio": "BUC",
+      "expertoId": "u-exp-bucaramanga",
+      "clinicoId": "u-cli-bucaramanga",
+      "evaluacion": null,
+      "resultado": null,
+      "flujo": {
+        "estado": "Sin evaluación",
+        "decisionClinica": null,
+        "alertaCrisis": null,
+        "visitaProgramada": "2026-10-09",
+        "proximoPaso": "El experto hace la entrevista en la visita del 2026-10-09."
+      },
+      "consentimiento": null,
+      "ruta": null,
+      "curso": null,
+      "seguimiento": null
+    },
+    {
+      "id": "sm-433",
+      "codigo": "FLO-SM433",
+      "cuentaId": "u-pac-sm-433",
+      "idOriginal2022": 433,
+      "nombre": "Tatiana",
+      "origenNombre": "Real · solo nombre",
+      "valorOriginalEnBase": "Tatiana",
+      "edad": 32,
+      "sexo": "Femenino",
+      "identidadGenero": "Femenino",
+      "estadoCivil": "Casado(A)",
+      "estrato": 3,
+      "municipioBase2022": "Floridablanca",
+      "fechaRegistro2022": "2022-06-23",
+      "territorio": "FLO",
+      "expertoId": "u-exp-floridablanca",
+      "clinicoId": "u-cli-floridablanca",
+      "evaluacion": null,
+      "resultado": null,
+      "flujo": {
+        "estado": "Sin evaluación",
+        "decisionClinica": null,
+        "alertaCrisis": null,
+        "visitaProgramada": "2026-10-09",
+        "proximoPaso": "El experto hace la entrevista en la visita del 2026-10-09."
+      },
+      "consentimiento": null,
+      "ruta": null,
+      "curso": null,
+      "seguimiento": null
+    },
+    {
+      "id": "sm-207",
+      "codigo": "BOG-SM207",
+      "cuentaId": "u-pac-sm-207",
+      "idOriginal2022": 207,
+      "nombre": "Juli",
+      "origenNombre": "Derivado del usuario",
+      "valorOriginalEnBase": "Juli16BTS",
+      "edad": 18,
+      "sexo": "Femenino",
+      "identidadGenero": "Femenino",
+      "estadoCivil": "Soltero(A)",
+      "estrato": 4,
+      "municipioBase2022": "Bogota",
+      "fechaRegistro2022": "2022-06-06",
+      "territorio": "BOG",
+      "expertoId": "u-exp-bogota",
+      "clinicoId": "umuvzhvkb",
+      "evaluacion": null,
+      "resultado": null,
+      "flujo": {
+        "estado": "Sin evaluación",
+        "decisionClinica": null,
+        "alertaCrisis": null,
+        "visitaProgramada": "2026-10-10",
+        "proximoPaso": "El experto hace la entrevista en la visita del 2026-10-10."
+      },
+      "consentimiento": null,
+      "ruta": null,
+      "curso": null,
+      "seguimiento": null
+    },
+    {
+      "id": "sm-406",
+      "codigo": "CAL-SM406",
+      "cuentaId": "u-pac-sm-406",
+      "idOriginal2022": 406,
+      "nombre": "Stiven",
+      "origenNombre": "Real · solo nombre",
+      "valorOriginalEnBase": "Stiven",
+      "edad": 18,
+      "sexo": "Masculino",
+      "identidadGenero": "Masculino",
+      "estadoCivil": "Soltero(A)",
+      "estrato": 2,
+      "municipioBase2022": "Cali",
+      "fechaRegistro2022": "2022-06-22",
+      "territorio": "CAL",
+      "expertoId": "u-exp-cali",
+      "clinicoId": "u-cli-cali",
+      "evaluacion": null,
+      "resultado": null,
+      "flujo": {
+        "estado": "Sin evaluación",
+        "decisionClinica": null,
+        "alertaCrisis": null,
+        "visitaProgramada": "2026-10-10",
+        "proximoPaso": "El experto hace la entrevista en la visita del 2026-10-10."
+      },
+      "consentimiento": null,
+      "ruta": null,
+      "curso": null,
+      "seguimiento": null
+    },
+    {
+      "id": "sm-187",
+      "codigo": "BAR-SM187",
+      "cuentaId": "u-pac-sm-187",
+      "idOriginal2022": 187,
+      "nombre": "Esmy",
+      "origenNombre": "Derivado del usuario",
+      "valorOriginalEnBase": "Esmy.nam",
+      "edad": 28,
+      "sexo": "Femenino",
+      "identidadGenero": "Femenino",
+      "estadoCivil": "Unión Libre",
+      "estrato": 2,
+      "municipioBase2022": "Barranquilla",
+      "fechaRegistro2022": "2022-06-03",
+      "territorio": "BAR",
+      "expertoId": "u-exp-barranquilla",
+      "clinicoId": "u-cli-barranquilla",
+      "evaluacion": null,
+      "resultado": null,
+      "flujo": {
+        "estado": "Sin evaluación",
+        "decisionClinica": null,
+        "alertaCrisis": null,
+        "visitaProgramada": "2026-10-09",
+        "proximoPaso": "El experto hace la entrevista en la visita del 2026-10-09."
+      },
+      "consentimiento": null,
+      "ruta": null,
+      "curso": null,
+      "seguimiento": null
+    }
+  ],
+  "activos": [
+    {
+      "codigo": "TB-001",
+      "tipo": "Tablet",
+      "estado": "Asignada",
+      "asignadoA": "u-exp-bucaramanga",
+      "territorio": "BUC",
+      "desde": "2026-08-15",
+      "nota": "Hoy TB-001 está asignada a Camila Restrepo (Salento): reasignar."
+    },
+    {
+      "codigo": "TB-002",
+      "tipo": "Tablet",
+      "estado": "Asignada",
+      "asignadoA": "u-exp-floridablanca",
+      "territorio": "FLO",
+      "desde": "2026-08-15",
+      "nota": null
+    },
+    {
+      "codigo": "TB-003",
+      "tipo": "Tablet",
+      "estado": "Asignada",
+      "asignadoA": "u-exp-bogota",
+      "territorio": "BOG",
+      "desde": "2026-08-15",
+      "nota": null
+    },
+    {
+      "codigo": "TB-004",
+      "tipo": "Tablet",
+      "estado": "Asignada",
+      "asignadoA": "u-exp-cali",
+      "territorio": "CAL",
+      "desde": "2026-08-15",
+      "nota": null
+    },
+    {
+      "codigo": "TB-005",
+      "tipo": "Tablet",
+      "estado": "Asignada",
+      "asignadoA": "u-exp-barranquilla",
+      "territorio": "BAR",
+      "desde": "2026-08-15",
+      "nota": null
+    },
+    {
+      "codigo": "MN-001",
+      "tipo": "Manilla",
+      "estado": "Reservada",
+      "asignadoA": "sm-135",
+      "territorio": "BUC",
+      "desde": null,
+      "nota": "Ruta pendiente de aprobación clínica: no entregar todavía."
+    },
+    {
+      "codigo": "MN-002",
+      "tipo": "Manilla",
+      "estado": "Reservada",
+      "asignadoA": "sm-434",
+      "territorio": "FLO",
+      "desde": null,
+      "nota": "Ruta pendiente de aprobación clínica: no entregar todavía."
+    },
+    {
+      "codigo": "MN-003",
+      "tipo": "Manilla",
+      "estado": "Asignada",
+      "asignadoA": "sm-365",
+      "territorio": "FLO",
+      "desde": "2026-10-02",
+      "nota": null
+    },
+    {
+      "codigo": "MN-004",
+      "tipo": "Manilla",
+      "estado": "Asignada",
+      "asignadoA": "sm-347",
+      "territorio": "BOG",
+      "desde": "2026-09-16",
+      "nota": null
+    },
+    {
+      "codigo": "MN-005",
+      "tipo": "Manilla",
+      "estado": "Reservada",
+      "asignadoA": "sm-237",
+      "territorio": "BOG",
+      "desde": null,
+      "nota": "Ruta pendiente de aprobación clínica: no entregar todavía."
+    },
+    {
+      "codigo": "MN-006",
+      "tipo": "Manilla",
+      "estado": "Reservada",
+      "asignadoA": "sm-352",
+      "territorio": "CAL",
+      "desde": null,
+      "nota": "Ruta aprobada: entregar en el primer contacto."
+    },
+    {
+      "codigo": "MN-007",
+      "tipo": "Manilla",
+      "estado": "Asignada",
+      "asignadoA": "sm-182",
+      "territorio": "CAL",
+      "desde": "2026-09-13",
+      "nota": null
+    },
+    {
+      "codigo": "MN-008",
+      "tipo": "Manilla",
+      "estado": "Reservada",
+      "asignadoA": "sm-124",
+      "territorio": "BAR",
+      "desde": null,
+      "nota": "Ruta pendiente de aprobación clínica: no entregar todavía."
+    }
+  ],
+  "solicitudesCambioRuta": [
+    {
+      "id": "CR-001",
+      "perfil": "P08",
+      "alcance": "Todos los territorios",
+      "solicitadoPorId": "admin",
+      "fecha": "2026-10-07",
+      "revisorId": "umuvzhvkb",
+      "estado": "Pendiente",
+      "motivo": "Las personas de P08 dicen que 3 mensajes por semana son demasiados. Probar con 1 vez por semana.",
+      "cambios": [
+        {
+          "servicio": "Check-ins por WhatsApp",
+          "de": "3 veces por semana",
+          "a": "1 vez por semana"
+        }
+      ],
+      "rutaActual": {
+        "duracionMeses": 6,
+        "servicios": [
+          {
+            "id": "clin",
+            "servicio": "Psicólogo clínico",
+            "frecuencia": "Mensual",
+            "canal": "Por teléfono"
+          },
+          {
+            "id": "wa",
+            "servicio": "Check-ins por WhatsApp",
+            "frecuencia": "3 veces por semana",
+            "canal": "Audio primero"
+          },
+          {
+            "id": "bracelet",
+            "servicio": "Manilla de monitoreo",
+            "frecuencia": "6 meses",
+            "canal": "Sueño y ritmo cardiaco"
+          },
+          {
+            "id": "videos",
+            "servicio": "Videos psicoeducativos",
+            "frecuencia": "Serie completa",
+            "canal": ""
+          },
+          {
+            "id": "tech",
+            "servicio": "Técnicas guiadas",
+            "frecuencia": "En audio",
+            "canal": ""
+          },
+          {
+            "id": "pmplus",
+            "servicio": "Problem Management Plus (PM+)",
+            "frecuencia": "5 sesiones semanales",
+            "canal": "En casa · experto capacitado"
+          },
+          {
+            "id": "group",
+            "servicio": "Grupo de apoyo en la vereda",
+            "frecuencia": "Quincenal",
+            "canal": "En la vereda · con facilitador"
+          },
+          {
+            "id": "cursos",
+            "servicio": "Cursos y cuentos",
+            "frecuencia": "Curso con el experto",
+            "canal": "WhatsApp · portada, audio y pregunta"
+          }
+        ]
+      },
+      "rutaPropuesta": {
+        "duracionMeses": 6,
+        "servicios": [
+          {
+            "id": "clin",
+            "servicio": "Psicólogo clínico",
+            "frecuencia": "Mensual",
+            "canal": "Por teléfono"
+          },
+          {
+            "id": "wa",
+            "servicio": "Check-ins por WhatsApp",
+            "frecuencia": "1 vez por semana",
+            "canal": "Audio primero"
+          },
+          {
+            "id": "bracelet",
+            "servicio": "Manilla de monitoreo",
+            "frecuencia": "6 meses",
+            "canal": "Sueño y ritmo cardiaco"
+          },
+          {
+            "id": "videos",
+            "servicio": "Videos psicoeducativos",
+            "frecuencia": "Serie completa",
+            "canal": ""
+          },
+          {
+            "id": "tech",
+            "servicio": "Técnicas guiadas",
+            "frecuencia": "En audio",
+            "canal": ""
+          },
+          {
+            "id": "pmplus",
+            "servicio": "Problem Management Plus (PM+)",
+            "frecuencia": "5 sesiones semanales",
+            "canal": "En casa · experto capacitado"
+          },
+          {
+            "id": "group",
+            "servicio": "Grupo de apoyo en la vereda",
+            "frecuencia": "Quincenal",
+            "canal": "En la vereda · con facilitador"
+          },
+          {
+            "id": "cursos",
+            "servicio": "Cursos y cuentos",
+            "frecuencia": "Curso con el experto",
+            "canal": "WhatsApp · portada, audio y pregunta"
+          }
+        ]
+      },
+      "siSeRechaza": "P08 se queda con la ruta actual."
+    }
+  ]
+}

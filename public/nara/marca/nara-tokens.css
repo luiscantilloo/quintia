@@ -1,0 +1,53 @@
+:root {
+  /* NARA · marca (fuente: manual de marca v0.1) */
+  --nara-amarillo: #FDCD22;
+  --nara-rosa: #FFA3D0;
+  --nara-crema: #F0ECE6;
+  --nara-tinta: #161413;
+  --nara-blanco: #FFFFFF;
+
+  /* Emociones de NARA (pastel · acompaña): SOLO fondos de tarjetas y ambiente */
+  --nara-calma: #A9D4FF;
+  --nara-curiosidad: #FFE189;
+  --nara-duda: #FFC28F;
+  --nara-energia: #FFC0E0;
+
+  /* Cuerpo del personaje NARA por emoción (de los archivos oficiales) */
+  --personaje-nara-calma: #1AA0FF;
+  --personaje-nara-curiosidad: #FFCF21;
+  --personaje-nara-duda: #FF7A1F;
+  --personaje-nara-energia: #FF9FD0;
+
+  /* Emociones de TEO (vivo · conversa) */
+  --teo-calma: #12E6FF;
+  --teo-curiosidad: #3FEA73;
+  --teo-duda: #FF8A00;
+  --teo-energia: #F75CB4;
+
+  /* Neutros derivados */
+  --texto-secundario: #5E5750;
+  --linea: #DCD6CD;
+  --superficie-2: #E6E1D9;
+
+  /* Funcionales · decisión NARA 2026-09-30 (el manual no los define). Nunca solos: siempre con texto o ícono */
+  --crisis: #B42318;          /* texto blanco */
+  --crisis-suave: #FDE7E4;    /* texto #8A1C14 */
+  --crisis-texto: #8A1C14;
+  --ia-borrador: #D8FBE3;     /* borde --teo-curiosidad, texto tinta */
+  --riesgo-minimo: #4E9A6B;
+  --riesgo-leve: #A3B13C;
+  --riesgo-moderado: #E0A526;
+  --riesgo-moderado-severo: #D9692B;
+  --riesgo-severo: #9C2F25;   /* texto blanco */
+  --digital-baja: #D8D2C9;
+  --digital-media: #8C857C;
+  --digital-alta: #161413;
+  --estado-al-dia: #4E9A6B;
+  --exito-suave: #E3F1E8;     /* fondo de Validada / Al día, texto tinta */
+  --estado-bajo-meta: #E0A526;
+  --estado-revisar: #D9692B;
+
+  /* Tipografía */
+  --fuente-titulos: 'Fredoka', 'Figtree', system-ui, sans-serif;
+  --fuente-texto: 'Figtree', system-ui, sans-serif;
+}

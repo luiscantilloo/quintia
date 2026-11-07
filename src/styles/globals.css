@@ -1,0 +1,754 @@
+@import "tailwindcss";
+@import "./nara-tokens.css";
+@import "./plateado-tokens.css";
+
+@theme inline {
+  /* Paleta QUINTIA · Presentación de marca 2026 */
+  --color-pl-verde-raiz: #0f2d3b;
+  --color-pl-verde-vivo: #31c6e6;
+  --color-pl-menta: #e7faf5;
+  --color-pl-naranja: #8B4AD4;
+  --color-pl-lima: #61f0d2;
+  --color-pl-crema-sol: #f7f5ef;
+  --color-pl-hueso: #f7f5ef;
+  --color-pl-tinta: #0f2d3b;
+  --color-pl-texto2: #5b6770;
+  --color-pl-linea: #e5e0d5;
+  --color-pl-blanco: #ffffff;
+  --color-pl-rojo: #b42318;
+  --color-pl-ciencia: #6c04c9;
+  --color-pl-tecnologia: #31c6e6;
+  --color-pl-experiencias: #8b4ad4;
+  --color-pl-comunidad: #31c6e6;
+  --color-pl-ciencia-bg: #efe8fb;
+  --color-pl-tecnologia-bg: #e4f7fb;
+  --color-pl-experiencias-bg: #f3ebfb;
+  --color-pl-comunidad-bg: #e7faf5;
+  --color-pl-explorar: #6c04c9;
+  --color-pl-sentir: #31c6e6;
+  --color-pl-moverse: #61f0d2;
+  --color-pl-conectar: #8b4ad4;
+  --color-pl-acompanar: #0f2d3b;
+  --color-pl-violeta: #6c04c9;
+  --color-pl-cian: #31c6e6;
+  --color-pl-aqua: #61f0d2;
+  --color-pl-carbon: #332f32;
+  /* Alias legacy */
+  --color-pl-noche: #0f2d3b;
+  --color-pl-niebla: #f7f5ef;
+  --color-pl-plata: #7a8f96;
+  --color-pl-plata-oscura: #3a555c;
+  --color-pl-azul: #31c6e6;
+  --color-pl-azul-claro: #31c6e6;
+  --color-pl-teal: #31c6e6;
+  --color-pl-ambar: #da9e46;
+
+  --color-nara-amarillo: var(--nara-amarillo);
+  --color-nara-rosa: var(--nara-rosa);
+  --color-nara-crema: var(--nara-crema);
+  --color-nara-tinta: var(--nara-tinta);
+  --color-nara-blanco: var(--nara-blanco);
+  --color-nara-calma: var(--nara-calma);
+  --color-nara-curiosidad: var(--nara-curiosidad);
+  --color-nara-duda: var(--nara-duda);
+  --color-nara-energia: var(--nara-energia);
+  --color-personaje-nara-calma: var(--personaje-nara-calma);
+  --color-personaje-nara-curiosidad: var(--personaje-nara-curiosidad);
+  --color-personaje-nara-duda: var(--personaje-nara-duda);
+  --color-personaje-nara-energia: var(--personaje-nara-energia);
+  --color-teo-calma: var(--teo-calma);
+  --color-teo-curiosidad: var(--teo-curiosidad);
+  --color-teo-duda: var(--teo-duda);
+  --color-teo-energia: var(--teo-energia);
+  --color-texto-secundario: var(--texto-secundario);
+  --color-linea: var(--linea);
+  --color-superficie-2: var(--superficie-2);
+  --color-crisis: var(--crisis);
+  --color-crisis-suave: var(--crisis-suave);
+  --color-crisis-texto: var(--crisis-texto);
+  --color-ia-borrador: var(--ia-borrador);
+  --color-riesgo-minimo: var(--riesgo-minimo);
+  --color-riesgo-leve: var(--riesgo-leve);
+  --color-riesgo-moderado: var(--riesgo-moderado);
+  --color-riesgo-moderado-severo: var(--riesgo-moderado-severo);
+  --color-riesgo-severo: var(--riesgo-severo);
+  --color-digital-baja: var(--digital-baja);
+  --color-digital-media: var(--digital-media);
+  --color-digital-alta: var(--digital-alta);
+  --color-estado-al-dia: var(--estado-al-dia);
+  --color-exito-suave: var(--exito-suave);
+  --color-estado-bajo-meta: var(--estado-bajo-meta);
+  --color-estado-revisar: var(--estado-revisar);
+  /* Tipografías oficiales QUINTIA 2026 */
+  --font-titulos: var(--font-montserrat), Montserrat, system-ui, sans-serif;
+  --font-texto: var(--font-space-grotesk), "Space Grotesk", system-ui, sans-serif;
+  --font-mono: var(--font-dm-mono), "DM Mono", ui-monospace, monospace;
+}
+
+html,
+body {
+  margin: 0;
+  min-height: 100%;
+  background: var(--pl-hueso, #f7f5ef);
+  color: var(--pl-tinta, #0f2d3b);
+  font-family: var(--font-space-grotesk), "Space Grotesk", system-ui, sans-serif;
+  font-weight: 400;
+  overflow-x: clip;
+}
+
+button,
+input,
+select,
+textarea {
+  font-family: inherit;
+  font-weight: inherit;
+}
+
+/* Manual de marca: titulares Montserrat ExtraBold · cuerpo Space Grotesk */
+h1,
+h2,
+h3 {
+  font-family: var(--font-montserrat), Montserrat, system-ui, sans-serif;
+  font-weight: 800;
+}
+
+h4,
+h5,
+h6,
+.font-titulos {
+  font-family: var(--font-montserrat), Montserrat, system-ui, sans-serif;
+}
+
+.font-texto {
+  font-family: var(--font-space-grotesk), "Space Grotesk", system-ui, sans-serif;
+}
+
+code,
+kbd,
+samp,
+pre,
+.font-mono {
+  font-family: var(--font-dm-mono), "DM Mono", ui-monospace, monospace;
+}
+
+/* Eyebrows / datos / voz (DM Mono) */
+.pl-eyebrow {
+  font-family: var(--font-dm-mono), "DM Mono", ui-monospace, monospace;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+@keyframes pl-drift {
+  from {
+    transform: scale(1.05) translate3d(0, 0, 0);
+  }
+  to {
+    transform: scale(1.12) translate3d(-1.5%, 1%, 0);
+  }
+}
+
+@keyframes pl-pulse {
+  0%,
+  100% {
+    opacity: 0.55;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.04);
+  }
+}
+
+/* Formularios QUINTIA · entrada escalonada */
+@keyframes q-form-in {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 14px, 0);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+@keyframes q-form-glow {
+  0%,
+  100% {
+    opacity: 0.45;
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  50% {
+    opacity: 0.85;
+    transform: translate3d(4%, -3%, 0) scale(1.08);
+  }
+}
+
+.q-form-stagger > * {
+  animation: q-form-in 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.q-form-stagger > *:nth-child(1) {
+  animation-delay: 0.03s;
+}
+.q-form-stagger > *:nth-child(2) {
+  animation-delay: 0.08s;
+}
+.q-form-stagger > *:nth-child(3) {
+  animation-delay: 0.13s;
+}
+.q-form-stagger > *:nth-child(4) {
+  animation-delay: 0.18s;
+}
+.q-form-stagger > *:nth-child(5) {
+  animation-delay: 0.23s;
+}
+.q-form-stagger > *:nth-child(6) {
+  animation-delay: 0.28s;
+}
+.q-form-stagger > *:nth-child(7) {
+  animation-delay: 0.33s;
+}
+.q-form-stagger > *:nth-child(8) {
+  animation-delay: 0.38s;
+}
+.q-form-stagger > *:nth-child(n + 9) {
+  animation-delay: 0.42s;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .q-form-stagger > * {
+    animation: none;
+  }
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+/* CTAs heredados: acento naranja QUINTIA con texto claro */
+.bg-nara-amarillo {
+  color: var(--pl-hueso, #F7F5EF);
+}
+
+/**
+ * Topbar global QUINTIA — nunca scrollea con el contenido.
+ * Debe vivir FUERA del área `.nara-scroll` (columna: topbar shrink-0 + scroll flex-1).
+ */
+.nara-topbar {
+  position: relative;
+  z-index: 40;
+  flex-shrink: 0;
+  box-sizing: border-box;
+  height: 4rem; /* h-16 */
+  width: 100%;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  border-bottom: 1px solid #e5e0d5;
+  background: #f6f5f0;
+}
+
+/* Scroll acento QUINTIA solo en zonas de contenido (bajo el topbar) */
+.nara-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: var(--pl-comunidad, #31C6E6) transparent;
+}
+
+.nara-scroll::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+.nara-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.nara-scroll::-webkit-scrollbar-thumb {
+  background: var(--pl-comunidad, #31C6E6);
+  border-radius: 999px;
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+
+.nara-scroll::-webkit-scrollbar-thumb:hover {
+  background: #1FA8C4;
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+
+/* H-011 (reporte TRL 2026-10-10, WCAG 2.4.7): el foco del teclado siempre se ve.
+   Antes `outline: none` lo ocultaba en toda la app. */
+:focus-visible {
+  outline: 3px solid #0F2D3B;
+  outline-offset: 2px;
+}
+
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  outline: 2px solid #0F2D3B;
+  outline-offset: 1px;
+  box-shadow: 0 0 0 4px rgba(40, 123, 121, 0.35);
+}
+
+/* Composer chat (TEJIVA): un solo borde en el contenedor; el input no lleva outline propio. */
+.pl-composer {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  border-radius: 12px;
+  border: 1.5px solid #e5e0d5;
+  background: #fff;
+  padding: 4px 6px 4px 14px;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+.pl-composer:focus-within {
+  border-color: #0F2D3B;
+  box-shadow: 0 0 0 3px rgba(40, 123, 121, 0.28);
+}
+.pl-composer input,
+.pl-composer input:focus,
+.pl-composer input:focus-visible {
+  flex: 1;
+  min-width: 0;
+  border: 0 !important;
+  outline: none !important;
+  box-shadow: none !important;
+  background: transparent;
+  padding: 10px 0;
+  font-size: 16px;
+  color: #0F2D3B;
+}
+.pl-composer input::placeholder {
+  color: rgba(74, 95, 104, 0.7);
+}
+.pl-composer__send {
+  flex: none;
+  width: 40px;
+  height: 40px;
+  border-radius: 999px;
+  border: 0 !important;
+  outline: none !important;
+  box-shadow: none !important;
+  display: grid;
+  place-items: center;
+  transition: background 0.15s ease, transform 0.1s ease;
+}
+.pl-composer__send:focus-visible {
+  outline: none !important;
+  box-shadow: 0 0 0 3px rgba(40, 123, 121, 0.4) !important;
+}
+.pl-composer__send--on {
+  background: #31C6E6;
+  color: #f6f5f0;
+  cursor: pointer;
+}
+.pl-composer__send--on:hover {
+  background: #1f6361;
+}
+.pl-composer__send--on:active {
+  transform: scale(0.95);
+}
+.pl-composer__send--off {
+  background: #e5e0d5;
+  color: rgba(74, 95, 104, 0.6);
+  cursor: not-allowed;
+}
+
+/* Campos de ingreso / formularios: borde menta único; sin outline cuadrado ni autofill azul. */
+.pl-field {
+  box-sizing: border-box;
+  width: 100%;
+  min-height: 56px;
+  border-radius: 10px;
+  border: 1.5px solid #e5e0d5;
+  background: #fff;
+  padding: 0 14px;
+  font-family: inherit;
+  font-size: 17px;
+  color: #0F2D3B;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+.pl-field:focus,
+.pl-field:focus-visible {
+  outline: none !important;
+  border-color: #0F2D3B;
+  box-shadow: 0 0 0 3px rgba(40, 123, 121, 0.28) !important;
+}
+.pl-field::placeholder {
+  color: rgba(74, 95, 104, 0.65);
+}
+.pl-field:-webkit-autofill,
+.pl-field:-webkit-autofill:hover,
+.pl-field:-webkit-autofill:focus {
+  -webkit-text-fill-color: #0F2D3B;
+  box-shadow: 0 0 0 1000px #fff inset;
+  transition: background-color 99999s ease-out;
+}
+
+/* No forzar color en <a>: anula text-* de Tailwind (botones/CTAs invisibles). */
+a:not([class*="text-"]) {
+  color: inherit;
+}
+
+/* Layouts responsive NARA */
+.nara-page {
+  --nara-page-pad-x: 16px;
+  --nara-page-pad-y: 20px;
+  width: 100%;
+  max-width: 1440px;
+  margin: 0 auto;
+  /* Sin padding-top: el cabecero sticky lo aporta (así no se mueve al scrollear). */
+  padding: 0 var(--nara-page-pad-x) 48px;
+  box-sizing: border-box;
+  container-type: inline-size;
+  container-name: nara-page;
+}
+
+@media (min-width: 768px) {
+  .nara-page {
+    --nara-page-pad-x: 32px;
+    --nara-page-pad-y: 28px;
+    padding-bottom: 56px;
+  }
+}
+
+/**
+ * Cabecero de página (título, subtítulo, pestañas, CTA).
+ * Queda fijo bajo el topbar; solo scrollea lo de abajo.
+ */
+.nara-page-head {
+  position: sticky;
+  top: 0;
+  z-index: 25;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  /* Mismo hueso que el shell — sin bloque crema distinto */
+  background: #f6f5f0;
+  padding: var(--nara-page-pad-y) 0 12px;
+  margin-bottom: 4px;
+  font-family: var(--font-space-grotesk), "Space Grotesk", system-ui, sans-serif;
+}
+
+.nara-page-head h1,
+.nara-page-head h2,
+.nara-page-head .font-titulos {
+  font-family: var(--font-montserrat), Montserrat, system-ui, sans-serif;
+  font-weight: 800;
+}
+
+.nara-page-head .nara-tabs-scroll {
+  margin-bottom: 0;
+}
+
+/* Home: columnas según el ancho ÚTIL (no el de la ventana). */
+.nara-home-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 20px;
+  align-items: start;
+  /* Sin PageHead: deja aire bajo el topbar */
+  padding-top: var(--nara-page-pad-y, 20px);
+}
+
+/* Solo 2 columnas cuando hay espacio real de lectura (evita aplastar con TEO). */
+@container nara-page (min-width: 1100px) {
+  .nara-home-grid {
+    grid-template-columns: minmax(0, 1fr) min(300px, 30%);
+    gap: 28px;
+  }
+}
+
+.nara-home-main {
+  background: #fff;
+  border: 1px solid #e5e0d5;
+  border-radius: 20px;
+  padding: 22px 18px;
+  display: flex;
+  flex-direction: column;
+  min-height: 420px;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.nara-home-teo-standin {
+  display: flex;
+  min-height: min(70vh, 560px);
+  min-width: 0;
+  align-items: center;
+  justify-content: center;
+  grid-column: 1 / -1;
+}
+
+.nara-home-grid--teo {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+@container nara-page (min-width: 640px) {
+  .nara-home-main {
+    padding: 28px 32px;
+    min-height: 560px;
+  }
+
+  .nara-home-teo-standin {
+    min-height: min(72vh, 640px);
+  }
+}
+
+.nara-form-grid-3 {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 14px;
+}
+
+@media (min-width: 900px) {
+  .nara-form-grid-3 {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 18px 22px;
+  }
+}
+
+.nara-scroll-x {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.nara-kpi-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 12px;
+}
+
+@media (min-width: 640px) {
+  .nara-kpi-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 1100px) {
+  .nara-kpi-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+.nara-split-panel {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 16px;
+  align-items: start;
+  min-width: 0;
+}
+
+/* Ancho ÚTIL de la página (con TEO abierto el viewport puede seguir ancho). */
+@container nara-page (min-width: 1024px) {
+  .nara-split-panel {
+    grid-template-columns: minmax(0, 1fr) minmax(0, min(480px, 40%));
+    gap: 18px;
+  }
+}
+
+.nara-split-panel-start {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 16px;
+  align-items: start;
+  min-width: 0;
+}
+
+@container nara-page (min-width: 1024px) {
+  .nara-split-panel-start {
+    grid-template-columns: minmax(0, min(420px, 42%)) minmax(0, 1fr);
+    gap: 18px;
+  }
+}
+
+/* Par de selects en editor de cursos: no desborda al estrechar. */
+.nara-course-week-pair {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 6px;
+  min-width: 0;
+}
+
+@container nara-page (min-width: 420px) {
+  .nara-course-week-pair {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  }
+}
+
+.nara-form-grid-4 {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 14px;
+  align-items: end;
+}
+
+@media (min-width: 640px) {
+  .nara-form-grid-4 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 1100px) {
+  .nara-form-grid-4 {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 18px;
+  }
+}
+
+.nara-kpi-grid-5 {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 12px;
+}
+
+@media (min-width: 640px) {
+  .nara-kpi-grid-5 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 900px) {
+  .nara-kpi-grid-5 {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 1200px) {
+  .nara-kpi-grid-5 {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+  }
+}
+
+.nara-tabs-scroll {
+  display: flex;
+  gap: 6px;
+  border-bottom: 1px solid #e5e0d5;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+
+.nara-tabs-scroll::-webkit-scrollbar {
+  display: none;
+}
+
+.nara-label-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 6px;
+  align-items: center;
+}
+
+@media (min-width: 640px) {
+  .nara-label-row {
+    grid-template-columns: 150px minmax(0, 1fr);
+    gap: 10px;
+  }
+}
+
+/* SweetAlert2 · marca QUINTIA */
+.nara-swal-popup {
+  font-family: var(--font-texto) !important;
+  color: var(--nara-tinta, #0F2D3B) !important;
+  border-radius: 20px !important;
+  border: 1px solid var(--linea, #e5e0d5) !important;
+  padding: 1.5rem 1.25rem 1.25rem !important;
+  box-shadow: 0 24px 60px rgba(22, 20, 19, 0.22) !important;
+}
+
+.nara-swal-title {
+  font-family: var(--font-titulos) !important;
+  font-weight: 800 !important;
+  color: var(--nara-tinta, #0F2D3B) !important;
+}
+
+.nara-swal-html {
+  font-size: 16px !important;
+  color: var(--nara-tinta, #0F2D3B) !important;
+  line-height: 1.45 !important;
+}
+
+.nara-swal-actions {
+  gap: 10px !important;
+  margin-top: 1.25rem !important;
+  flex-wrap: wrap !important;
+}
+
+.nara-swal-confirm,
+.nara-swal-deny,
+.nara-swal-cancel {
+  font-family: var(--font-titulos) !important;
+  font-size: 15px !important;
+  font-weight: 700 !important;
+  height: 44px !important;
+  padding: 0 18px !important;
+  border-radius: 14px !important;
+  margin: 0 !important;
+  box-shadow: none !important;
+  cursor: pointer !important;
+}
+
+.nara-swal-confirm {
+  background: var(--pl-comunidad, #31C6E6) !important;
+  color: #f6f5f0 !important;
+  border: none !important;
+}
+
+.nara-swal-deny {
+  background: #fff !important;
+  color: var(--nara-tinta, #0F2D3B) !important;
+  border: 1.5px solid var(--nara-tinta, #0F2D3B) !important;
+}
+
+.nara-swal-cancel {
+  background: #fff !important;
+  color: var(--nara-tinta, #0F2D3B) !important;
+  border: 1.5px solid var(--linea, #e5e0d5) !important;
+}
+
+.swal2-icon.swal2-success .swal2-success-ring {
+  border-color: rgba(53, 154, 84, 0.45) !important;
+}
+
+.swal2-icon.swal2-success [class^="swal2-success-line"] {
+  background-color: var(--nara-tinta, #0F2D3B) !important;
+}
+
+.swal2-icon.swal2-info,
+.swal2-icon.swal2-warning {
+  border-color: var(--pl-experiencias, #8B4AD4) !important;
+  color: var(--nara-tinta, #0F2D3B) !important;
+}
+
+@keyframes nara-kenburns {
+  from {
+    transform: scale(1);
+  }
+  to {
+    transform: scale(1.06);
+  }
+}
+
+@keyframes nara-float {
+  from {
+    translate: 0 0;
+  }
+  to {
+    translate: 0 -10px;
+  }
+}

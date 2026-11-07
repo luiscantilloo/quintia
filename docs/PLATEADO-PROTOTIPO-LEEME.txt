@@ -1,0 +1,18 @@
+PLATEADO · prototipo clicable
+Programa de Núcleo Care para personas mayores sin red de apoyo suficiente.
+
+Cómo abrir: doble clic en index.html. No necesita servidor ni internet (React y Babel van en vendor/).
+Ingreso: elija uno de los 8 usuarios de la lista.
+Herramientas internas: 5 toques en el logo de la pantalla de ingreso (restablecer datos).
+En la conversación de WhatsApp de doña Inés, 5 toques en TEO muestran el guion de notas de voz.
+
+Pantallas
+- Plateado.dc.html ......... Ingreso por lista
+- Admin.dc.html ............ Carmen Restrepo: territorios, usuarios y alta de cuentas, informes, Configuración del programa
+- Gestor.dc.html ........... Jhon Jairo Patiño: visitas, consentimiento «¿Quién firma?», evaluación, resultado, avisos
+- Clinico.dc.html .......... Dra. Beatriz Londoño: alertas por categoría, aprobaciones, fichas, remisiones
+- WhatsApp.dc.html ......... Doña Inés Cardona: TEO por notas de voz, check-in, recordatorio, crisis
+- PlanImpreso.dc.html ...... Don Gilberto Arango: plan impreso
+- Cuidadora.dc.html ........ Luz Dary Arango: resumen, citas, avisos, reporte de urgencia
+- App.dc.html .............. Don Álvaro Mejía: inicio, TEO por voz, mi ruta
+- Observador.dc.html ....... Alcaldía de Salento: tablero agregado

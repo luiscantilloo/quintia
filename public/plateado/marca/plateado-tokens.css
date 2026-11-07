@@ -1,0 +1,103 @@
+/* QUINTIA · Presentación de marca 2026
+ * Degradado vivo · Cinco fuerzas · Tipografía Montserrat + Space Grotesk
+ */
+:root {
+  /* Base institucional */
+  --pl-verde-raiz: #0f2d3b; /* Profundidad · texto */
+  --pl-tinta: #0f2d3b;
+  --pl-hueso: #f7f5ef; /* Marfil · fondo */
+  --pl-crema-sol: #f7f5ef;
+  --pl-blanco: #ffffff;
+  --pl-linea: #e5e0d5; /* Arena */
+  --pl-texto2: #5b6770;
+  --pl-rojo: #b42318;
+  --pl-carbon: #332f32; /* Persona en el símbolo */
+
+  /* Degradado de marca */
+  --pl-violeta: #6c04c9;
+  --pl-cian: #31c6e6;
+  --pl-aqua: #61f0d2;
+  --pl-gradiente: linear-gradient(135deg, #61f0d2 0%, #31c6e6 45%, #6c04c9 100%);
+
+  /* Cinco fuerzas */
+  --pl-explorar: #6c04c9;
+  --pl-sentir: #31c6e6;
+  --pl-moverse: #61f0d2;
+  --pl-conectar: #8b4ad4;
+  --pl-acompanar: #0f2d3b;
+
+  /* Alias pilares (legado UI → fuerzas) */
+  --pl-ciencia: var(--pl-explorar);
+  --pl-tecnologia: var(--pl-cian);
+  --pl-experiencias: var(--pl-conectar);
+  --pl-comunidad: var(--pl-cian);
+
+  --pl-ciencia-bg: #efe8fb;
+  --pl-tecnologia-bg: #e4f7fb;
+  --pl-experiencias-bg: #f3ebfb;
+  --pl-comunidad-bg: #e7faf5;
+
+  /* Semántica UI */
+  --pl-verde-vivo: var(--pl-cian); /* acento vivo */
+  --pl-menta: var(--pl-comunidad-bg);
+  --pl-lima: var(--pl-aqua);
+  --pl-naranja: #c27241;
+  --pl-sentir-alias: var(--pl-sentir);
+
+  /* Alias legacy */
+  --pl-noche: var(--pl-verde-raiz);
+  --pl-niebla: var(--pl-hueso);
+  --pl-plata: #7a8f96;
+  --pl-plata-oscura: #3a555c;
+  --pl-azul: var(--pl-cian);
+  --pl-azul-claro: var(--pl-cian);
+  --pl-teal: var(--pl-cian);
+  --pl-ambar: #da9e46;
+
+  /* NARA aliases → QUINTIA */
+  --nara-amarillo: var(--pl-cian);
+  --nara-rosa: var(--pl-violeta);
+  --nara-crema: var(--pl-hueso);
+  --nara-tinta: var(--pl-tinta);
+  --nara-blanco: var(--pl-blanco);
+
+  --nara-calma: var(--pl-comunidad-bg);
+  --nara-curiosidad: var(--pl-ciencia-bg);
+  --nara-duda: var(--pl-tecnologia-bg);
+  --nara-energia: var(--pl-experiencias-bg);
+
+  --personaje-nara-calma: var(--pl-cian);
+  --personaje-nara-curiosidad: var(--pl-violeta);
+  --personaje-nara-duda: var(--pl-conectar);
+  --personaje-nara-energia: var(--pl-aqua);
+
+  --teo-calma: var(--pl-cian);
+  --teo-curiosidad: var(--pl-violeta);
+  --teo-duda: var(--pl-conectar);
+  --teo-energia: var(--pl-aqua);
+
+  --texto-secundario: var(--pl-texto2);
+  --linea: var(--pl-linea);
+  --superficie-2: #ebe7de;
+
+  --crisis: var(--pl-rojo);
+  --crisis-suave: #fde7e4;
+  --crisis-texto: #8a1c14;
+  --ia-borrador: var(--pl-ciencia-bg);
+  --riesgo-minimo: var(--pl-cian);
+  --riesgo-leve: var(--pl-aqua);
+  --riesgo-moderado: #da9e46;
+  --riesgo-moderado-severo: #c27241;
+  --riesgo-severo: var(--pl-rojo);
+  --digital-baja: var(--pl-plata);
+  --digital-media: var(--pl-plata-oscura);
+  --digital-alta: var(--pl-tinta);
+  --estado-al-dia: var(--pl-cian);
+  --exito-suave: var(--pl-comunidad-bg);
+  --estado-bajo-meta: #da9e46;
+  --estado-revisar: #c27241;
+
+  --fuente-titulos: var(--font-montserrat), Montserrat, system-ui, sans-serif;
+  --fuente-texto: var(--font-space-grotesk), "Space Grotesk", system-ui, sans-serif;
+  --fuente-mono: var(--font-dm-mono), "DM Mono", ui-monospace, monospace;
+}

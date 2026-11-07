@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none" role="img" aria-label="Clinico">
+  <rect width="64" height="64" rx="14" fill="#E5F2E9"/>
+  <circle cx="32" cy="22" r="9" fill="#2D5A43"/>
+  <rect x="14" y="34" width="36" height="18" rx="9" fill="#2D5A43"/>
+</svg>

@@ -1,0 +1,23 @@
+---
+description: Estilos nuevos con Tailwind; no migrar inline existente
+globs: "**/*.{tsx,jsx,css}"
+alwaysApply: true
+---
+
+# Estilos: Tailwind de ahora en adelante
+
+No reescribir componentes que ya usan `style={{ }}`. Ese código se deja como está.
+
+Todo lo **nuevo** o **editado de forma sustancial** (UI, layout, pantallas) usa **Tailwind** (`className`), no CSS inline, no CSS Modules, no hojas por componente.
+
+- Colores de marca: tokens mapeados en `src/styles/globals.css` (`bg-nara-crema`, `text-nara-tinta`, `border-linea`, `font-titulos`, `font-texto`, etc.).
+- Excepción de `style`: solo valores que Tailwind no puede expresar (posición calculada, CSS variables dinámicas en runtime).
+- No añadir clases utilitarias a componentes que no se estén tocando.
+
+```tsx
+// ❌ nuevo
+<div style={{ display: "flex", gap: 8, background: "#F0ECE6" }} />
+
+// ✅ nuevo
+<div className="flex gap-2 bg-nara-crema" />
+```

@@ -1,0 +1,9 @@
+/* NARA · fuentes locales (SIL Open Font License). Titulares: Fredoka SemiBold 600 · Texto: Figtree */
+@font-face { font-family: 'Fredoka'; font-style: normal; font-weight: 400; font-display: swap; src: url('Fredoka-Regular.woff2') format('woff2'); }
+@font-face { font-family: 'Fredoka'; font-style: normal; font-weight: 500; font-display: swap; src: url('Fredoka-Medium.woff2') format('woff2'); }
+@font-face { font-family: 'Fredoka'; font-style: normal; font-weight: 600; font-display: swap; src: url('Fredoka-SemiBold.woff2') format('woff2'); }
+@font-face { font-family: 'Fredoka'; font-style: normal; font-weight: 700; font-display: swap; src: url('Fredoka-Bold.woff2') format('woff2'); }
+@font-face { font-family: 'Figtree'; font-style: normal; font-weight: 400; font-display: swap; src: url('Figtree-Regular.woff2') format('woff2'); }
+@font-face { font-family: 'Figtree'; font-style: normal; font-weight: 500; font-display: swap; src: url('Figtree-Medium.woff2') format('woff2'); }
+@font-face { font-family: 'Figtree'; font-style: normal; font-weight: 600; font-display: swap; src: url('Figtree-SemiBold.woff2') format('woff2'); }
+@font-face { font-family: 'Figtree'; font-style: normal; font-weight: 700; font-display: swap; src: url('Figtree-Bold.woff2') format('woff2'); }

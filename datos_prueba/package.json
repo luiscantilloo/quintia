@@ -1,0 +1,13 @@
+{
+  "name": "nara-datos-prueba",
+  "private": true,
+  "description": "Datos de prueba de NARA: validación del JSON y generación del Excel de carga",
+  "scripts": {
+    "validar": "node validar.js",
+    "excel": "node generar_excel.js",
+    "excel:final": "node generar_excel.js --final"
+  },
+  "dependencies": {
+    "exceljs": "4.4.0"
+  }
+}
