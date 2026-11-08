@@ -2,9 +2,13 @@
 
 /**
  * Tarjeta de un juego en ficha clínica.
- * Modal = estadísticas propias del juego (no asignados/jugados/terminados).
+ * Modal = datos generales (asignados/jugados/terminados + tiempos)
+ * + estadísticas propias del juego + listado de partidas.
  */
-import { listGameHistoryFor } from "@/lib/nara-services/juegos.js";
+import {
+  computeJuegosStats,
+  listGameHistoryFor,
+} from "@/lib/nara-services/juegos.js";
 import { GAMES_META } from "@/lib/nara-services/analizador/contrato.js";
 import { useNaraLive, useNaraStore } from "@/providers/nara-provider";
 import { useMemo, useState } from "react";
@@ -258,6 +262,7 @@ export function GameToolCard({ item, patientId }: HerramientaCardProps) {
   }, [store, patientId, gameId, open]);
 
   const stats = useMemo(() => buildGameStats(gameId, hist), [gameId, hist]);
+  const generales = useMemo(() => computeJuegosStats(hist), [hist]);
   const doneN = completedOf(hist).length;
   const preview =
     stats.find((s) => s.value !== "—")?.value ||
@@ -312,6 +317,48 @@ export function GameToolCard({ item, patientId }: HerramientaCardProps) {
             </header>
 
             <div className="min-h-0 flex-1 overflow-y-auto px-5 py-4">
+              <p className="m-0 mb-2 text-[12px] font-medium uppercase tracking-[0.08em] text-texto-secundario">
+                Datos generales
+              </p>
+              <div className="mb-3 grid grid-cols-3 gap-2">
+                {[
+                  { k: "Asignados", v: String(generales.assigned) },
+                  { k: "Jugados", v: String(generales.played) },
+                  { k: "Terminados", v: String(generales.completed) },
+                ].map((s) => (
+                  <div
+                    key={s.k}
+                    className="rounded-2xl border border-linea bg-nara-blanco px-2.5 py-2.5 text-center"
+                  >
+                    <p className="m-0 text-[11px] leading-tight text-texto-secundario">
+                      {s.k}
+                    </p>
+                    <p className="m-0 mt-0.5 font-titulos text-xl font-semibold tabular-nums">
+                      {s.v}
+                    </p>
+                  </div>
+                ))}
+              </div>
+              <div className="mb-5 grid grid-cols-3 gap-2">
+                {[
+                  { k: "Tiempo mín.", v: generales.minLabel },
+                  { k: "Tiempo máx.", v: generales.maxLabel },
+                  { k: "Promedio", v: generales.avgLabel },
+                ].map((s) => (
+                  <div
+                    key={s.k}
+                    className="rounded-2xl border border-linea bg-nara-blanco px-2.5 py-2.5 text-center"
+                  >
+                    <p className="m-0 text-[11px] leading-tight text-texto-secundario">
+                      {s.k}
+                    </p>
+                    <p className="m-0 mt-0.5 font-titulos text-[15px] font-semibold tabular-nums">
+                      {s.v}
+                    </p>
+                  </div>
+                ))}
+              </div>
+
               <p className="m-0 mb-2 text-[12px] font-medium uppercase tracking-[0.08em] text-texto-secundario">
                 Estadísticas
               </p>
