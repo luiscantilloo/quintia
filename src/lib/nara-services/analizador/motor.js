@@ -52,12 +52,20 @@ function hasAnalizadorConsent(store, patientId) {
   return !!(c && c.analizador === true);
 }
 
+/** Cualquier partida jugada cuenta (terminada, perdida o dejada). */
+function partidaConMedida(p) {
+  if (!p) return false;
+  const v = Number(p.medida?.valor ?? p.valor ?? p.score);
+  return Number.isFinite(v);
+}
+
 function buildBaseline(partidas, cfg) {
   const N = Number.isFinite(Number(cfg.partidas)) ? Number(cfg.partidas) : 10;
   const D = Number.isFinite(Number(cfg.dias)) ? Number(cfg.dias) : 14;
   // 0 = no descartar (importante: `|| 3` rompería el 0)
   const K = Number.isFinite(Number(cfg.descarta)) ? Number(cfg.descarta) : 3;
-  const usable = partidas.filter((p) => p.completo && p.evento === "partida.terminada");
+  // Desde la 1.ª partida: no exige victoria ni “terminada”.
+  const usable = partidas.filter(partidaConMedida);
   if (usable.length <= K) {
     return { ready: false, n: usable.length, need: N, values: [], band: null };
   }
@@ -94,7 +102,7 @@ function buildBaseline(partidas, cfg) {
 function weeklyStats(partidas, mejor) {
   const byWeek = new Map();
   for (const p of partidas) {
-    if (!p.completo) continue;
+    if (!partidaConMedida(p)) continue;
     const k = weekKey(p.inicio);
     if (!byWeek.has(k)) byWeek.set(k, []);
     byWeek.get(k).push(p);
@@ -211,10 +219,8 @@ export function recalcularPaciente(store, patientId) {
   let baseMin = Infinity;
 
   for (const game of fuentes) {
-    const gv = Number(cfg.gameVersions?.[game] || 1);
-    const partidas = all.filter(
-      (p) => p.game === game && Number(p.version || 1) === gv,
-    );
+    // Todas las versiones: el analizador lee desde la 1.ª partida jugada.
+    const partidas = all.filter((p) => p.game === game);
     const baseline = buildBaseline(partidas, cfg);
     baseMin = Math.min(baseMin, baseline.n);
 
@@ -314,24 +320,20 @@ export function recalcularPaciente(store, patientId) {
     updatedAt: Date.now(),
     bandByGame: Object.fromEntries(
       fuentes.map((game) => {
-        const gv = Number(cfg.gameVersions?.[game] || 1);
-        const partidas = all.filter(
-          (p) => p.game === game && Number(p.version || 1) === gv,
-        );
+        const partidas = all.filter((p) => p.game === game);
         const b = buildBaseline(partidas, cfg);
         return [game, b.band];
       }),
     ),
     seriesByGame: Object.fromEntries(
       fuentes.map((game) => {
-        const gv = Number(cfg.gameVersions?.[game] || 1);
         const partidas = all.filter(
-          (p) =>
-            p.game === game &&
-            Number(p.version || 1) === gv &&
-            p.completo,
+          (p) => p.game === game && partidaConMedida(p),
         );
-        return [game, partidas.map((p) => Number(p.medida?.valor ?? p.valor))];
+        return [
+          game,
+          partidas.map((p) => Number(p.medida?.valor ?? p.valor ?? p.score)),
+        ];
       }),
     ),
   };

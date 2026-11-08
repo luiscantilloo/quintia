@@ -149,11 +149,11 @@ export function defsForGame(game) {
   return GAME_METRIC_DEFS[String(game || "")] || [];
 }
 
-/** Serie de una métrica sobre partidas completas (orden cronológico). */
+/** Serie de una métrica desde la 1.ª partida (gane, pierda o la deje). */
 export function seriesForMetric(partidas, def) {
   const out = [];
   for (const p of partidas || []) {
-    if (!p || p.completo === false) continue;
+    if (!p) continue;
     const v = def.extract(p);
     if (v == null || !Number.isFinite(v)) continue;
     out.push({

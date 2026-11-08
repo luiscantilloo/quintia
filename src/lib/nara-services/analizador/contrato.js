@@ -119,14 +119,23 @@ export function normalizeGameLog(raw, pid) {
   if (!g) return null;
   const start = Number(raw.startedAt || raw.at) || Date.now();
   const end = Number(raw.completedAt || raw.at) || start;
-  const completo = /completed/i.test(String(raw.status || ""));
-  let valor = Number(raw.medida ?? raw.score ?? raw.valor);
+  const completo =
+    /completed/i.test(String(raw.status || "")) ||
+    raw.completo === true ||
+    raw.evento === "partida.terminada";
+  const medidaRaw = raw.medida;
+  let valor = Number(
+    medidaRaw && typeof medidaRaw === "object"
+      ? medidaRaw.valor
+      : (medidaRaw ?? raw.score ?? raw.valor),
+  );
   if (game === "sudoku" && !Number.isFinite(valor)) {
     valor = Math.max(1, Math.round((end - start) / 60000));
   }
   if (game === "duelo" && !Number.isFinite(valor)) {
     valor = Number(raw.score) || 0;
   }
+  if (!Number.isFinite(valor)) valor = 0;
   try {
     return buildEventoPartida({
       id: raw.id || raw.eventId || `${g.cod}-${start}`,
