@@ -1,7 +1,7 @@
 /**
- * Lógica de periodicidad e historial de juegos (Sudoku y similares).
+ * Lógica e historial de juegos (Sudoku y similares).
  * Catálogo de matriz: ver gamesCatalog.js (4 juegos + analizador).
- * Frecuencias: 2h · 8h · Diario.
+ * Los juegos ya no usan franjas 2h/8h/Diario: son libres (on/off en matriz).
  */
 import library from "./juegos/sudoku_library_medium.json";
 import { GAME_FREQS, GAME_IDS, LEGACY_JUEGOS_ID } from "./gamesCatalog.js";
@@ -9,7 +9,7 @@ import { GAME_FREQS, GAME_IDS, LEGACY_JUEGOS_ID } from "./gamesCatalog.js";
 const FREQS = GAME_FREQS;
 const LS_KEY = "nara.gameLogs.v1";
 
-/** @typedef {'every_2h' | 'every_8h' | 'daily'} JuegosFreqKind */
+/** @typedef {'libre' | 'every_2h' | 'every_8h' | 'daily'} JuegosFreqKind */
 
 /**
  * @param {unknown} raw
@@ -17,14 +17,28 @@ const LS_KEY = "nara.gameLogs.v1";
  */
 export function normalizeJuegosFreq(raw) {
   const s = String(raw || "").trim().toLowerCase();
+  // Sin frecuencia / legado vacío → libre (sin franja).
+  if (
+    !s ||
+    s === "off" ||
+    s === "libre" ||
+    s === "on" ||
+    s === "activo" ||
+    /sin\s*l[ií]mite/.test(s)
+  ) {
+    return { kind: "libre", label: "Libre", hours: 0 };
+  }
   if (/^8\s*h|cada\s*8|8h/.test(s)) {
     return { kind: "every_8h", label: FREQS[1], hours: 8 };
   }
   if (/diario|daily|1\s*vez\s*al\s*d[ií]a|cada\s*d[ií]a/.test(s)) {
     return { kind: "daily", label: FREQS[2], hours: 24 };
   }
-  // Default producto: cada 2 horas
-  return { kind: "every_2h", label: FREQS[0], hours: 2 };
+  if (/^2\s*h|cada\s*2|2h/.test(s)) {
+    return { kind: "every_2h", label: FREQS[0], hours: 2 };
+  }
+  // Cualquier otra etiqueta (p. ej. resto de rutas viejas) → libre.
+  return { kind: "libre", label: "Libre", hours: 0 };
 }
 
 export function listSudokuPuzzles() {
@@ -46,6 +60,13 @@ function startOfDay(d) {
 
 /** Ventana actual según frecuencia. */
 function currentPeriod(kind, now = Date.now()) {
+  if (kind === "libre") {
+    return {
+      from: 0,
+      to: Number.MAX_SAFE_INTEGER,
+      nextWhenBlocked: "",
+    };
+  }
   const day0 = startOfDay(now);
   if (kind === "daily") {
     return {
@@ -238,52 +259,37 @@ export function computeJuegosStats(hist) {
 }
 
 export function getJuegosFreqForPatient(store, patientId) {
-  const { patient, id } = resolveJuegosPatient(store, patientId);
-  const profile = (patient && patient.profile) || "P05";
-  let freqRaw = "";
-  try {
-    const { r, d } =
-      typeof store.parseCode === "function"
-        ? store.parseCode(profile)
-        : { r: -1, d: -1 };
-    if (r >= 0 && d >= 0 && typeof store.pathList === "function") {
-      const ctx =
-        typeof store.ctxFor === "function" ? store.ctxFor(id || patientId) : null;
-      const list = store.pathList(r, d, null, ctx) || [];
-      const j =
-        list.find((x) => x && x.id === "sudoku") ||
-        list.find((x) => x && GAME_IDS.includes(x.id)) ||
-        list.find((x) => x && x.id === LEGACY_JUEGOS_ID);
-      if (j && j.freq) freqRaw = j.freq;
-    }
-  } catch {
-    /* ignore */
-  }
-  return normalizeJuegosFreq(freqRaw || FREQS[0]);
+  // Matriz: juegos solo on/off (freqs []). Ignorar 2h/8h/Diario legado en path.
+  void store;
+  void patientId;
+  return normalizeJuegosFreq("libre");
 }
 
 export function juegosWindowStatusFor(store, patientId, now = Date.now()) {
   const freqInfo = getJuegosFreqForPatient(store, patientId);
-  const hist = listGameHistoryFor(store, patientId);
+  const hist = listGameHistoryFor(store, patientId).filter(
+    (e) => !e.game || e.game === "sudoku",
+  );
   const period = currentPeriod(freqInfo.kind, now);
-  const inWin = hist.filter((e) => {
-    const t = e.startedAt || e.at;
-    return t >= period.from && t < period.to;
-  });
-  // Cuenta como “ya usado” si hay cualquier sesión en la ventana (asignada o terminada).
-  const needs = inWin.length === 0;
-  const open = inWin.find(
+  // Libre: siempre puede jugar. Solo reanuda partida abierta de sudoku.
+  const open = hist.find(
     (e) => e.status === "started" || e.status === "assigned",
   );
+  const needs = true;
+  const inWin =
+    freqInfo.kind === "libre"
+      ? hist.slice(-5)
+      : hist.filter((e) => {
+          const t = e.startedAt || e.at;
+          return t >= period.from && t < period.to;
+        });
   return {
     needs,
     inWindow: inWin,
-    open,
+    open: open || null,
     hist,
     freqInfo,
-    nextHint: needs
-      ? `Frecuencia: ${freqInfo.label}`
-      : period.nextWhenBlocked,
+    nextHint: "",
     period,
   };
 }

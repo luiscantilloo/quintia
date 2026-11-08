@@ -264,7 +264,8 @@ const KEY = 'nara-memory-v1';
     if (d >= 1 && r <= 3) on('ia', r <= 1 ? 'Acceso libre' : 'Entre sesiones');
     // · 4 juegos + analizador con capacidad Media o Alta.
     if (d >= 1) {
-      GAME_IDS.forEach((id) => on(id, '2h'));
+      // Juegos: on/off sin franja (2h/8h/Diario retirados de la matriz).
+      GAME_IDS.forEach((id) => on(id, 'Libre'));
       on(ANALIZADOR_SERVICE.id, 'Activo');
     }
     // inactiveMinutes: umbral del perfil para estado Inactivo (default: 1 día).

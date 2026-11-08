@@ -217,8 +217,9 @@ export function SudokuGame({
                 Sudoku
               </span>
               <span className="truncate text-[15px] text-[#4D5D66]">
-                {status.freqInfo.label}
-                {puzzle ? ` · ${puzzle.id}` : ""}
+                {puzzle
+                  ? `Lógica y planificación · ${puzzle.id}`
+                  : "Lógica y planificación"}
               </span>
             </div>
           </div>

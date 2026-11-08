@@ -57,7 +57,7 @@ export function FrutasGame({
         tipo: "Libre",
         sync: "1",
         embed: "1",
-        v: "7",
+        v: "8",
       }),
     });
     return `/juegos/frutas/index.html?${q.toString()}`;
@@ -65,12 +65,18 @@ export function FrutasGame({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [patientId, cfgKey]);
 
+  // Solo al cambiar el iframe: no resetear ready en cada tick de live/store
+  // (eso dejaba «Preparando el puesto…» para siempre).
   useEffect(() => {
+    setReady(false);
     recordedRef.current = false;
     startedAtRef.current = Date.now();
-    setReady(false);
     setLastScore(null);
+    const t = window.setTimeout(() => setReady(true), 2500);
+    return () => window.clearTimeout(t);
+  }, [src]);
 
+  useEffect(() => {
     const onMessage = (ev: MessageEvent) => {
       const data = ev.data;
       if (!data || data.type !== "quintia:partida") return;
