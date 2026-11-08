@@ -1,5 +1,5 @@
 import { listGameHistoryFor } from "@/lib/nara-services/juegos.js";
-import { GAME_SERVICES, isGameServiceId } from "@/lib/nara-services/gamesCatalog.js";
+import { GAME_SERVICES } from "@/lib/nara-services/gamesCatalog.js";
 import {
   ANALIZADOR_RANK,
   ESTADOS_AN,
@@ -77,30 +77,6 @@ function gameMeta(id: string) {
   };
 }
 
-function hasGamesInPath(
-  store: { pathList?: Function; parseCode?: Function; ctxFor?: Function },
-  patient: PatientLite,
-): boolean {
-  try {
-    const pc =
-      typeof store.parseCode === "function"
-        ? store.parseCode(patient.profile || "")
-        : { r: -1, d: -1 };
-    if (pc.r < 0 || pc.d < 0) return false;
-    const ctx =
-      typeof store.ctxFor === "function" ? store.ctxFor(patient.id) : null;
-    const list =
-      typeof store.pathList === "function"
-        ? store.pathList(pc.r, pc.d, null, ctx) || []
-        : [];
-    return list.some(
-      (x: { id?: string }) => x?.id && isGameServiceId(x.id),
-    );
-  } catch {
-    return false;
-  }
-}
-
 function semanasLabel(p: PatientLite): number | string {
   const w = p.weeks ?? p.week;
   return Number.isFinite(Number(w)) ? Number(w) : "—";
@@ -161,9 +137,12 @@ export function buildAnalizadorPanel(opts: {
 
   for (const p of patients) {
     const hist = listGameHistoryFor(store, p.id);
-    if (!hasGamesInPath(store, p) && !hist.length && !snaps[p.id]) continue;
-
     const snap = snaps[p.id];
+    const baseN = Number(snap?.baseN) || 0;
+    // Solo con actividad real (partidas o línea base empezada).
+    // Tener juegos en la ruta no basta: evita filas "0 de N · sin partidas".
+    if (!(hist.length > 0 || baseN > 0)) continue;
+
     const estado = asEstado(snap?.estado);
     counts[estado]++;
     const adhN = p.adherence;
@@ -176,7 +155,6 @@ export function buildAnalizadorPanel(opts: {
       counts.bajaConst++;
     }
     const e = ESTADOS_AN[estado];
-    const baseN = Number(snap?.baseN) || 0;
     const label =
       estado === "base"
         ? `Línea base · ${baseN} de ${cfgPartidas}`
