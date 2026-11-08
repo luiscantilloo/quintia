@@ -11,6 +11,7 @@ import { AgentDrawerShell } from "@/components/shared/agent-panel/AgentDrawerShe
 import { AgentPanel } from "@/components/shared/agent-panel/AgentPanel";
 import { NaraLoadingScreen } from "@/components/shared/nara-loading/NaraLoadingScreen";
 import { QuintiaLogo } from "@/components/shared/brand/QuintiaLogo";
+import { IconoTejiva } from "@/components/shared/brand/QuintiaIconos";
 import { UserMenu } from "@/components/shared/user-menu/UserMenu";
 import { ensureSession } from "@/lib/auth/ensureSession";
 import { useNaraStore } from "@/providers/nara-provider";
@@ -72,16 +73,12 @@ function ObservadorInner() {
           type="button"
           onClick={() => openAgent("")}
           aria-label="Abrir TEJIVA, asistente de QUINTIA"
-          className="inline-flex h-10 cursor-pointer items-center gap-2 rounded-full border border-[#E5E0D5] bg-[#F7F5EF] px-2.5 font-texto text-sm font-medium text-[#0F2D3B] transition hover:bg-[#E5E0D5]/70 sm:h-11 sm:px-3.5 sm:text-[15px]"
+          className="inline-flex h-10 cursor-pointer items-center gap-2 rounded-full border border-[#E5E0D5] bg-[#F1ECF9] px-2.5 font-texto text-sm font-medium text-[#0F2D3B] transition hover:brightness-[0.98] sm:h-11 sm:px-3.5 sm:text-[15px]"
         >
-          <img
-            src="/quintia/tejiva/tejiva-base.svg"
-            alt=""
-            className="block h-7 w-7 sm:-ml-1.5 sm:h-8 sm:w-8"
-          />
+          <IconoTejiva className="block h-7 w-7 sm:-ml-0.5 sm:h-8 sm:w-8" />
           <span className="hidden flex-col items-start leading-none sm:flex">
-            <span>TEJIVA</span>
-            <span className="mt-0.5 font-mono text-[10px] font-medium uppercase tracking-[0.08em] text-[#6B7280]">
+            <span className="font-semibold">TEJIVA</span>
+            <span className="mt-0.5 text-[10px] font-medium uppercase tracking-[0.08em] text-[#6B7280]">
               asistente
             </span>
           </span>

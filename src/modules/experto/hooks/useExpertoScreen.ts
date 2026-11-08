@@ -511,7 +511,7 @@ const SCRIPT = [
     reply: 'Anoté como borrador:\n· Pregunta 3 (sueño): Casi todos los días\n· Convivencia: A ratos solo/a\n\nSiguiente: pregunte por el interés y la energía. Puede decir: «¿Ha podido seguir haciendo las cosas que le gustan? ¿Cómo anda de energía?»' },
   { note: 'Dejó de ir a misa y al grupo de costura. Está cansada más de la mitad de los días. Se siente triste, pero dice que no ha perdido la esperanza.',
     drafts: [['phq', 0, 2], ['phq', 1, 2], ['phq', 3, 2]],
-    reply: 'Borradores: preguntas 1, 2 y 4 = Más de la mitad de los días.\n\nAhora pregunte por el apetito, cómo se siente consigo misma y la concentración. Cuando llegue a la pregunta 9, léala exactamente así:\n«En las últimas dos semanas, ¿con qué frecuencia ha pensado que estaría mejor muerto o muerta, o en hacerse daño de alguna forma?»' },
+    reply: 'Borradores: preguntas 1, 2 y 4 = Más de la mitad de los días.\n\nContinúe con el resto del cuestionario y confirme las respuestas revisadas.' },
   { note: 'Algunos días come menos. A veces siente que es una carga para su hija. Algunos días se le olvidan las cosas. A la pregunta 9 respondió que nunca.',
     drafts: [['phq', 4, 1], ['phq', 5, 1], ['phq', 6, 1], ['phq', 7, 0], ['phq', 8, 0]],
     reply: 'Borradores: preguntas 5, 6 y 7 = Varios días; 8 y 9 = Nunca. Si los confirma, el total del cuestionario es 12.\n\nPasemos a capacidad digital: «¿Qué celular usa? ¿Tiene señal en la casa? ¿Manda audios?»' },
@@ -1603,25 +1603,21 @@ const SCRIPT = [
     const all = [].concat(it.phq, it.dig, it.ctx);
     const okN = all.filter(x => x.st === 'ok').length, drN = all.filter(x => x.st === 'draft').length;
     const allOk = okN === all.length && all.length > 0;
-    const q9Idx = Math.max(0, phqQs.length - 1);
     const tag = s => s === 'ok' ? ['Confirmado', OK_BG, C.verde, '#31C6E6'] : s === 'draft' ? ['Por confirmar', C.ambarBg, C.ambarTx, C.ambar] : ['Sin respuesta', C.niebla, C.texto2, C.lineas];
     const secDraftN = it[st.sec].filter((x) => x.st === 'draft').length;
     const rows = secDef[st.sec].qs.map((qq, i) => {
       const cell = it[st.sec][i] || { v: null, st: 'none' }; const [t, tb, tf, tbd] = tag(cell.st);
-      const isQ9 = st.sec === 'phq' && i === q9Idx;
       return {
-        n: i + 1, q: qq.q, tag: t, tagBg: tb, tagFg: tf, tagBd: tbd, isDraft: cell.st === 'draft', sensitive: isQ9,
-        bd: isQ9 ? C.azul : cell.st === 'draft' ? C.ambar : C.lineas,
+        n: i + 1, q: qq.q, tag: t, tagBg: tb, tagFg: tf, tagBd: tbd, isDraft: cell.st === 'draft',
+        // Quintia: sin bloque «pregunta sensible» / redacción fija de ideación.
+        sensitive: false,
+        bd: cell.st === 'draft' ? C.ambar : C.lineas,
         confirm: () => setItem(st.sec, i, cell.v, 'ok'),
         opts: qq.o.map((label, v) => {
           const sel = cell.v === v;
           const fullLabel = st.sec === 'phq' ? v + ' · ' + label : label;
           // Al elegir queda «por confirmar»; «Confirmar las revisadas» las pasa a Confirmado.
-          // Pregunta 9 con crisis activa: modal antes de disparar.
-          const pick = () => {
-            if (st.sec === 'phq' && i === 8) requestPhqQ9Pick(v, fullLabel);
-            else setItem(st.sec, i, v, 'draft');
-          };
+          const pick = () => setItem(st.sec, i, v, 'draft');
           return { label: fullLabel, pick, bg: sel ? (cell.st === 'ok' ? C.verde : C.ambarBg) : '#fff', fg: sel ? (cell.st === 'ok' ? '#fff' : C.ambarTx) : C.tinta, bd: sel ? (cell.st === 'ok' ? C.verde : C.ambar) : C.lineas };
         })
       };
@@ -1635,6 +1631,7 @@ const SCRIPT = [
     if (alertObj) alertStatusText = alertObj.status === 'new' ? 'Enviada · esperando que la Dra. Lucía Marín tome el caso (' + A.agoText(alertObj.at) + ')' : alertObj.status === 'mine' || alertObj.status === 'retry' ? 'La Dra. Lucía Marín tomó el caso y está llamando' + (alertObj.status === 'retry' ? ' · no contestó, reintenta en 10 min' : '') : alertObj.status === 'closed' ? 'Atendida · ' + alertObj.outcome : 'En atención';
     const riskScale = A.RISK.map((r, i) => ({ k: r.k, c: r.c, op: i === res.r ? 1 : 0.28, ol: i === res.r ? '2px solid #0F2D3B' : 'none', fg: i === res.r ? C.tinta : C.texto2, fw: i === res.r ? 500 : 400 }));
     const digScale = A.DIG.map((r, i) => ({ k: r.k, c: r.c, op: i === res.d ? 1 : 0.35, ol: i === res.d ? '2px solid #0F2D3B' : 'none', fg: i === res.d ? C.tinta : C.texto2, fw: i === res.d ? 500 : 400 }));
+    const matrixDig = (Array.isArray(A.DIG) ? A.DIG : []).map((d: { k?: string }) => d?.k || '');
     const matrix = A.RISK.map((r, ri) => ({ k: r.k, c: r.c, cells: A.DIG.map((_dg, di) => {
       const hit = ri === res.r && di === res.d; const code = A.code(ri, di);
       if (hit && crisis) return { label: 'Suspendido', bg: '#fff', fg: C.tinta, bd: C.tinta, bs: 'dashed', fw: 500 };
@@ -2335,8 +2332,10 @@ const SCRIPT = [
       calc: () => {
         if (crisis) return go('result');
         if (!allOk) return flash('Faltan ' + (all.length - okN) + ' preguntas por confirmar para calcular el resultado.');
-        // v2: «Uso diario» no puede ser mayor que «Teléfono».
-        if ((it.dig[2].v || 0) > (it.dig[0].v || 0)) {
+        // v2: «Uso diario» no puede ser mayor que «Teléfono» (si ambas preguntas existen).
+        const digTel = it.dig[0];
+        const digUso = it.dig[2];
+        if (digTel && digUso && (digUso.v || 0) > (digTel.v || 0)) {
           return flash('«Uso diario» no puede ser mayor que «Teléfono». Revise la sección Capacidad digital.');
         }
         go('result');
@@ -2344,7 +2343,7 @@ const SCRIPT = [
       chat: st.chat.map(m => ({ isAi: m.who === 'ai', isExp: m.who === 'exp', text: m.text, label: m.label })),
       thinking: st.thinking, chatInput: st.chatInput, setChatInput: e => setState({ chatInput: e.target.value }), sendChat: () => sendChat(),
       hasExample: st.step < SCRIPT.length && st.pid === 'rosalba', exampleN: st.step + 1, useExample: () => SCRIPT[st.step] && setState({ chatInput: SCRIPT[st.step].note }),
-      secTabs, rows, q9: A.Q9_EXACT,
+      secTabs, rows, q9: '',
       secNote: st.sec === 'ctx'
         ? 'Se registra, no suma puntos. Elija y luego confirme.'
         : secDraftN
@@ -2371,13 +2370,21 @@ const SCRIPT = [
         const secLabel = secDef[st.sec].label;
         flash(n + (n === 1 ? ' respuesta confirmada' : ' respuestas confirmadas') + ' en ' + secLabel + '.');
       },
-      riskName: A.RISK[res.r].k, phqTotal: res.phqT, riskScale, digName: A.DIG[res.d].k, digTotal: res.digT, digScale,
-      digNote: res.sinTel
-        ? 'Sin teléfono: la capacidad digital queda en Baja.'
-        : res.dNoHelp < res.d
-          ? 'El apoyo de un familiar sube el nivel de ' + A.DIG[res.dNoHelp].k + ' a ' + A.DIG[res.d].k + '.'
-          : (it.dig[5].v ? 'Tiene apoyo de un familiar con el celular.' : ''),
-      matrix, profileLine: crisis ? A.code(res.r, res.d) + ' suspendido · Ruta de crisis' : res.code + ' · ' + A.RISK[res.r].k + ' × digital ' + A.DIG[res.d].k.toLowerCase(),
+      riskName: A.RISK[res.r]?.k || '—', phqTotal: res.phqT, riskScale, digName: A.DIG[res.d]?.k || '—', digTotal: res.digT, digScale,
+      digNote: (() => {
+        if (res.sinTel) return 'Sin teléfono: la capacidad digital queda en Baja.';
+        const digFrom = A.DIG[res.dNoHelp]?.k;
+        const digTo = A.DIG[res.d]?.k;
+        if (res.dNoHelp < res.d && digFrom && digTo) {
+          return 'El apoyo de un familiar sube el nivel de ' + digFrom + ' a ' + digTo + '.';
+        }
+        // Última pregunta dig = apoyo familiar (no asumir índice fijo 5).
+        const helpQ = it.dig[Math.max(0, it.dig.length - 1)];
+        return helpQ?.v ? 'Tiene apoyo de un familiar con el celular.' : '';
+      })(),
+      matrix, matrixDig, profileLine: crisis
+        ? A.code(res.r, res.d) + ' suspendido · Ruta de crisis'
+        : res.code + ' · ' + (A.RISK[res.r]?.k || '—') + ' × digital ' + String(A.DIG[res.d]?.k || '—').toLowerCase(),
       evidenceEnd, pathTitle: crisis ? 'Ruta de crisis' : 'Ruta asignada', pathDuration: crisis ? 'Reemplaza la ruta del perfil' : 'Duración total: ' + months + ' meses', path,
       reasonErr: '', clearReasonErr: () => setState({ reasonErr: '' }),
       cp: null, saveVisit: () => saveVisit(), saveNote: offline ? 'Sin señal: se guarda en la tablet y se sincroniza después.' : 'Se guarda y se sincroniza ahora.',

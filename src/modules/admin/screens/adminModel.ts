@@ -18,6 +18,11 @@ import {
   passwordPolicyError,
 } from "@/lib/auth/passwordPolicy";
 import { withTestTerritory } from "@/lib/geo/colombia";
+import {
+  GAME_IDS,
+  getGameCfg,
+  saveGameCfgVersion,
+} from "@/lib/nara-services/juegos/gameCfg.js";
 
 const EMPTY_EF = {
   firstName: "",
@@ -114,10 +119,10 @@ export function buildAdminModel(A: any, st: AdminUiState, api: AdminModelApi) {
       null;
     const live = pack
       ? {
-          risk: pack.risk,
-          phq: pack.phq || (A.defaultPhqRules && A.defaultPhqRules()),
-          dig: pack.dig,
-          ctx: pack.ctx || (A.defaultCtxRules && A.defaultCtxRules()),
+          risk: Array.isArray(pack.risk) ? pack.risk : [],
+          phq: pack.phq && typeof pack.phq === 'object' ? pack.phq : { q: [] },
+          dig: pack.dig && typeof pack.dig === 'object' ? pack.dig : { q: [], cuts: [] },
+          ctx: pack.ctx && typeof pack.ctx === 'object' ? pack.ctx : { q: [] },
           custom: Array.isArray(pack.custom) ? pack.custom : [],
         }
       : {
@@ -130,26 +135,15 @@ export function buildAdminModel(A: any, st: AdminUiState, api: AdminModelApi) {
     const base = pack && pack.pending ? pack.pending.draft : (S.rules.pending && !pack ? S.rules.pending.draft : live);
     // Siempre clonar: al sincronizar cortes/riesgo no mutamos st.rd en el render.
     const rd = JSON.parse(JSON.stringify(st.rd || base));
-    if (!rd.dig) rd.dig = {};
-    if (!Array.isArray(rd.dig.q) || !rd.dig.q.length) {
-      rd.dig.q = (A.defaultDigRules ? A.defaultDigRules().q : A.DIGQ.map((x: { q: string; o: string[] }) => ({
-        q: x.q,
-        o: x.o.map((o: string, i: number) => ({ o, p: i })),
-      })));
-    }
-    if (!Array.isArray(rd.dig.cuts) || !rd.dig.cuts.length) {
-      rd.dig.cuts = A.DIG.map((d: { k: string; min: number; max: number }) => ({
-        k: d.k,
-        min: d.min,
-        max: d.max,
-      }));
-    }
-    if (!rd.phq || !Array.isArray(rd.phq.q) || !rd.phq.q.length) {
-      rd.phq = A.defaultPhqRules ? A.defaultPhqRules() : { q: A.PHQ.map((t: string) => ({ q: t, o: A.PHQ_OPTS.map((o: string, i: number) => ({ o, p: i })) })) };
-    }
-    if (!rd.ctx || !Array.isArray(rd.ctx.q) || !rd.ctx.q.length) {
-      rd.ctx = A.defaultCtxRules ? A.defaultCtxRules() : { q: A.CTX.map((x: { q: string; o: string[] }) => ({ q: x.q, o: x.o.map((o: string, i: number) => ({ o, p: i })) })) };
-    }
+    // Territorio nuevo / pack vacío: no rellenar con PHQ-9 ni niveles por defecto.
+    if (!rd.dig || typeof rd.dig !== 'object') rd.dig = { q: [], cuts: [] };
+    if (!Array.isArray(rd.dig.q)) rd.dig.q = [];
+    if (!Array.isArray(rd.dig.cuts)) rd.dig.cuts = [];
+    if (!rd.phq || typeof rd.phq !== 'object') rd.phq = { q: [] };
+    if (!Array.isArray(rd.phq.q)) rd.phq.q = [];
+    if (!rd.ctx || typeof rd.ctx !== 'object') rd.ctx = { q: [] };
+    if (!Array.isArray(rd.ctx.q)) rd.ctx.q = [];
+    if (!Array.isArray(rd.risk)) rd.risk = [];
     if (!Array.isArray(rd.custom)) rd.custom = [];
     const num = (v) => (v === '' || isNaN(+v) ? NaN : +v);
     const LIKERT: string[] = A.PHQ_OPTS || ['Nunca', 'Varios días', 'Más de la mitad de los días', 'Casi todos los días'];
@@ -377,96 +371,66 @@ export function buildAdminModel(A: any, st: AdminUiState, api: AdminModelApi) {
         const i = order.indexOf(pathStep);
         if (i > 0) api.setState({ pathTab: order[i - 1] });
       },
+      /** ADM/VER: guarda borrador vN+1 y lo manda a Envío → aprobación clínica. */
+      saveAnalizadorVersion: (draft: {
+        partidas: number;
+        dias: number;
+        descarta: number;
+        sens: string;
+        plazo: number;
+        fuentes: Record<string, boolean>;
+        sugerencias: string[];
+      }) => {
+        void import('@/lib/nara-services/analizador').then((m) => {
+          const who =
+            (A.session?.() as { name?: string } | null)?.name || 'Administrador';
+          const { draft: saved } = m.saveAnDraftVersion(A, draft, who);
+          void import('@/lib/store/persist').then((p) =>
+            p.flushPersistWhenReady?.(A),
+          );
+          api.setState({
+            rulesMsg:
+              'Analizador v' +
+              (saved?.version || '?') +
+              ' enviado a aprobación clínica. Sigue vigente la anterior hasta que aprueben.',
+          });
+        });
+      },
+      /** Guarda parámetros de un juego (vigente al instante). */
+      saveGameVersion: (gameId: string, draftCampos: Record<string, string>) => {
+        const who =
+          (A.session?.() as { name?: string } | null)?.name || 'Administrador';
+        const saved = saveGameCfgVersion(A, gameId, draftCampos, who) || {};
+        void import('@/lib/store/persist').then((p) =>
+          p.flushPersistWhenReady?.(A),
+        );
+        api.setState({
+          rulesMsg:
+            'Juego ' +
+            gameId +
+            ' v' +
+            (saved.version || '?') +
+            ' vigente. Las partidas nuevas usan estos parámetros.',
+        });
+        return saved;
+      },
       pathGames: (() => {
         const demo = (S as {
           quintiaDemo?: {
             games?: Record<string, { id: string; nombre: string; hab: string }>;
             gameIds?: string[];
-            storeDefaults?: {
-              gameCfg?: Record<
-                string,
-                {
-                  version?: number;
-                  nivel?: number;
-                  sube?: string;
-                  mov?: number;
-                  corazones?: number;
-                  cartas?: number;
-                  sonido?: boolean;
-                  historial?: { v: number; cuando: string; cambio: string; quien: string }[];
-                }
-              >;
-            };
           };
         }).quintiaDemo;
-        const ids = demo?.gameIds || ['frutas', 'simon', 'duelo', 'sudoku'];
+        const ids: string[] = demo?.gameIds || GAME_IDS;
         const names: Record<string, { nombre: string; hab: string }> = {
           frutas: { nombre: 'Frutas', hab: 'Atención visual y planificación' },
           simon: { nombre: 'Simón dice', hab: 'Memoria de trabajo y atención' },
           duelo: { nombre: 'Duelo de cartas', hab: 'Flexibilidad y decisiones' },
           sudoku: { nombre: 'Sudoku', hab: 'Lógica y planificación' },
         };
-        const defaults: Record<
-          string,
-          {
-            version: number;
-            nivel: number;
-            sube: string;
-            mov?: number;
-            corazones?: number;
-            cartas?: number;
-            sonido: boolean;
-            historial: { v: number; cuando: string; cambio: string; quien: string }[];
-          }
-        > = {
-          frutas: {
-            version: 3,
-            nivel: 1,
-            sube: 'Automático según desempeño',
-            mov: 18,
-            sonido: true,
-            historial: [
-              { v: 3, cuando: 'Hace 3 semanas', quien: 'Marcela Ríos', cambio: 'Movimientos por partida: 20 → 18' },
-              { v: 2, cuando: 'Hace 2 meses', quien: 'Marcela Ríos', cambio: 'Sonido activado' },
-              { v: 1, cuando: 'Hace 4 meses', quien: 'Marcela Ríos', cambio: 'Versión inicial' },
-            ],
-          },
-          simon: {
-            version: 3,
-            nivel: 2,
-            sube: 'Automático según desempeño',
-            corazones: 2,
-            sonido: true,
-            historial: [
-              { v: 3, cuando: 'Hace 5 semanas', quien: 'Marcela Ríos', cambio: 'Corazones: 3 → 2' },
-              { v: 2, cuando: 'Hace 3 meses', quien: 'Marcela Ríos', cambio: 'Velocidad de la secuencia más lenta' },
-              { v: 1, cuando: 'Hace 4 meses', quien: 'Marcela Ríos', cambio: 'Versión inicial' },
-            ],
-          },
-          duelo: {
-            version: 2,
-            nivel: 1,
-            sube: 'Fijo',
-            cartas: 5,
-            sonido: false,
-            historial: [
-              { v: 2, cuando: 'Hace 2 meses', quien: 'Marcela Ríos', cambio: 'La regla cambia cada 4 jugadas' },
-              { v: 1, cuando: 'Hace 4 meses', quien: 'Marcela Ríos', cambio: 'Versión inicial' },
-            ],
-          },
-          sudoku: {
-            version: 1,
-            nivel: 1,
-            sube: 'Fijo',
-            sonido: false,
-            historial: [
-              { v: 1, cuando: 'Hace 6 meses', quien: 'Marcela Ríos', cambio: 'Versión inicial' },
-            ],
-          },
-        };
         return ids.map((id) => {
           const g = demo?.games?.[id] || { id, ...names[id] };
-          const cfg = { ...defaults[id], ...(demo?.storeDefaults?.gameCfg?.[id] || {}) };
+          const cfg = getGameCfg(S, id);
           const campos: { l: string; opts: string[]; cur: string }[] = [
             { l: 'Nivel inicial', opts: ['1', '2', '3', '4', '5'], cur: String(cfg.nivel ?? 1) },
             {
@@ -514,7 +478,7 @@ export function buildAdminModel(A: any, st: AdminUiState, api: AdminModelApi) {
             hab: g.hab || names[id]?.hab || '',
             version: Number(cfg.version) || 1,
             campos,
-            hist: cfg.historial || defaults[id]?.historial || [],
+            hist: cfg.historial || [],
           };
         });
       })(),
@@ -538,7 +502,32 @@ export function buildAdminModel(A: any, st: AdminUiState, api: AdminModelApi) {
             estadosAnalizador?: Record<string, { label: string; fg?: string; bg?: string; icon?: string }>;
           };
         }).quintiaDemo;
-        const cfg = an?.storeDefaults?.anCfg || {
+        // Fuente de verdad: anCfg aprobado (o la última pathRequest aprobada).
+        const vigenteRaw = (S as { anCfg?: Record<string, unknown> | null }).anCfg;
+        let vigente =
+          vigenteRaw && typeof vigenteRaw === 'object' ? vigenteRaw : null;
+        if (!vigente) {
+          const prs = Array.isArray((S as { pathRequests?: unknown[] }).pathRequests)
+            ? ((S as { pathRequests: Record<string, unknown>[] }).pathRequests)
+            : [];
+          for (let i = prs.length - 1; i >= 0; i--) {
+            const x = prs[i];
+            if (!x) continue;
+            if (x.tipo !== 'analizador' && x.code !== 'ANALIZADOR') continue;
+            const st = String(x.status || '').toLowerCase();
+            if (st !== 'aprobada' && st !== 'approved') continue;
+            const d = (x.draft as { anCfg?: Record<string, unknown> } | undefined)?.anCfg;
+            if (d && typeof d === 'object') {
+              vigente = d;
+              break;
+            }
+          }
+        }
+        const draftRaw = (S as { anDraft?: Record<string, unknown> | null }).anDraft;
+        const draft =
+          draftRaw && typeof draftRaw === 'object' ? draftRaw : null;
+        const demoCfg = an?.storeDefaults?.anCfg;
+        const cfg = {
           partidas: 10,
           dias: 14,
           descarta: 3,
@@ -556,6 +545,10 @@ export function buildAdminModel(A: any, st: AdminUiState, api: AdminModelApi) {
             { v: 1, cuando: 'Hace 4 meses', quien: 'Marcela Ríos', cambio: 'Versión inicial' },
           ],
           fuentes: { frutas: true, simon: true, duelo: true, sudoku: true },
+          ...(demoCfg || {}),
+          ...(vigente || {}),
+          // Borrador pendiente solo si aún no hay vigente (primer arranque).
+          ...(!vigente && draft ? draft : {}),
         };
         const medidasDefault: Record<string, string[]> = {
           frutas: ['Tiempo hasta cada movimiento', 'Movimientos inválidos', 'Puntaje', 'Nivel'],
@@ -570,16 +563,29 @@ export function buildAdminModel(A: any, st: AdminUiState, api: AdminModelApi) {
           mejorando: { label: 'Mejorando', fg: '#2C6247', bg: '#E0EFE5', icon: '▲' },
           cambio: { label: 'Cambio a revisar', fg: '#6E4705', bg: '#FAE7BF', icon: '◆' },
         };
+        const cfgR = cfg as {
+          version?: number;
+          partidas?: number;
+          dias?: number;
+          descarta?: number;
+          sens?: string;
+          plazo?: number;
+          sugerencias?: string[];
+          historial?: { v: number; cuando: string; cambio: string; quien: string }[];
+          fuentes?: Record<string, boolean>;
+        };
+        const numOr = (v: unknown, fallback: number) =>
+          Number.isFinite(Number(v)) ? Number(v) : fallback;
         return {
-          version: Number(cfg.version) || 2,
-          partidas: Number(cfg.partidas) || 10,
-          dias: Number(cfg.dias) || 14,
-          descarta: Number(cfg.descarta) || 3,
-          sens: String(cfg.sens || 'Media'),
-          plazo: Number(cfg.plazo) || 7,
-          sugerencias: Array.isArray(cfg.sugerencias) ? cfg.sugerencias : [],
-          hist: Array.isArray(cfg.historial) ? cfg.historial : [],
-          fuentesOn: cfg.fuentes || {},
+          version: numOr(cfgR.version, 2),
+          partidas: numOr(cfgR.partidas, 10),
+          dias: numOr(cfgR.dias, 14),
+          descarta: numOr(cfgR.descarta, 3),
+          sens: String(cfgR.sens || 'Media'),
+          plazo: numOr(cfgR.plazo, 7),
+          sugerencias: Array.isArray(cfgR.sugerencias) ? cfgR.sugerencias : [],
+          hist: Array.isArray(cfgR.historial) ? cfgR.historial : [],
+          fuentesOn: cfgR.fuentes || {},
           medidas,
           estados: Object.entries(estados).map(([k, v]) => ({
             id: k,
@@ -1197,11 +1203,12 @@ export function buildAdminModel(A: any, st: AdminUiState, api: AdminModelApi) {
       a.click();
       A.set(s => A.logActivity(s, (A.session()?.id || "admin"), 'Exportó ' + list.length + ' personas'));
     };
-    const digDrop = [0, 1, 2].map(di => {
+    const digBands = Array.isArray(A.DIG) && A.DIG.length ? A.DIG : [];
+    const digDrop = digBands.map((band: { k?: string; c?: string }, di: number) => {
       const group = all.filter(p => classified(p) && A.parseCode(p.profile).d === di);
       const drop = group.filter(p => /Sin contacto|Sin experto/i.test(p.status || '')).length;
       const pct = group.length ? Math.round(drop / group.length * 100) : 0;
-      return [A.DIG[di].k, pct, A.DIG[di].c];
+      return [band?.k || ("Digital " + (di + 1)), pct, band?.c || "#8C857C"];
     });
     const rosterCount =
       list.length + ' de ' + full.length + ' personas' + (list.length > 300 ? ' · se muestran 300' : '');
@@ -1426,11 +1433,23 @@ export function buildAdminModel(A: any, st: AdminUiState, api: AdminModelApi) {
     const digN = digBands.length || 3;
     const profileCode = (ri: number, di: number) =>
       'P' + String(ri * digN + di + 1).padStart(2, '0');
+    const selNum = parseInt(String(st.sel || 'P01').replace(/\D/g, ''), 10) - 1;
+    let sr = Number.isFinite(selNum) && selNum >= 0 ? Math.floor(selNum / digN) : 0;
+    let sd = Number.isFinite(selNum) && selNum >= 0 ? selNum % digN : 0;
+    if (sr < 0 || sd < 0 || sr >= riskBands.length || sd >= digN) {
+      sr = 0;
+      sd = 0;
+    }
+    // Perfil activo según la matriz vigente (2×2 → P01–P04; nunca P08 de la matriz vieja).
+    const activeSel = profileCode(sr, sd);
+    if (String(st.sel || '') !== activeSel) {
+      queuePromise.resolve().then(() => api.setState({ sel: activeSel }));
+    }
     const cellFor = (ri, di) => {
       const code = profileCode(ri, di);
-      const dr = api.draft(code);
-      const n = Object.keys(dr.s || {}).filter(
-        (k) => dr.s[k] && String(dr.s[k]).trim(),
+      const dr0 = api.draft(code);
+      const n = Object.keys(dr0.s || {}).filter(
+        (k) => dr0.s[k] && String(dr0.s[k]).trim(),
       ).length;
       return { code, n };
     };
@@ -1439,7 +1458,7 @@ export function buildAdminModel(A: any, st: AdminUiState, api: AdminModelApi) {
       c: r.c,
       cells: digBands.map((_dg, di) => {
         const x = cellFor(ri, di);
-        const on = st.sel === x.code;
+        const on = activeSel === x.code;
         return Object.assign(x, {
           bg: on ? C.verde : (r.bg || '#F7F5EF'),
           fg: on ? '#fff' : C.tinta,
@@ -1449,25 +1468,17 @@ export function buildAdminModel(A: any, st: AdminUiState, api: AdminModelApi) {
       }),
     }));
     const digHeaders = digBands.map((d) => d.k || 'Digital');
-    const selNum = parseInt(String(st.sel || 'P01').replace(/\D/g, ''), 10) - 1;
-    let sr = Number.isFinite(selNum) && selNum >= 0 ? Math.floor(selNum / digN) : 0;
-    let sd = Number.isFinite(selNum) && selNum >= 0 ? selNum % digN : 0;
-    if (sr < 0 || sd < 0 || sr >= riskBands.length || sd >= digN) {
-      sr = 0;
-      sd = 0;
-    }
-    const selCode = profileCode(sr, sd);
-    const dr = api.draft(st.sel || selCode);
+    const dr = api.draft(activeSel);
     const req = (S.pathRequests || []).find(
       (x) =>
-        x.code === st.sel &&
+        x.code === activeSel &&
         String(x.scope || 'all') === String(pathTerrNow || st.scope || 'all') &&
         String(x.status || 'pending').toLowerCase() === 'pending',
     );
-    const peRows = buildPathServiceRows(dr, C, api, st.sel);
+    const peRows = buildPathServiceRows(dr, C, api, activeSel);
     const pe = {
-      title: (st.sel || selCode) + ' · ' + (riskBands[sr]?.k || '') + ' × digital ' + String(digBands[sd]?.k || '').toLowerCase(),
-      people: A.people(S).filter(p => p.profile === st.sel).length,
+      title: activeSel + ' · ' + (riskBands[sr]?.k || '') + ' × digital ' + String(digBands[sd]?.k || '').toLowerCase(),
+      people: A.people(S).filter(p => p.profile === activeSel).length,
       // Con pending: solo lectura de lo vigente (no editar el envío en curso).
       rows: req
         ? peRows.map((row) => ({
@@ -1487,7 +1498,7 @@ export function buildAdminModel(A: any, st: AdminUiState, api: AdminModelApi) {
         fg: C.tinta,
         pick: () => {
           if (req) return;
-          api.setDraft(st.sel, (d) => { d.months = m; });
+          api.setDraft(activeSel, (d) => { d.months = m; });
         },
       })),
       inactiveMins: [
@@ -1505,7 +1516,7 @@ export function buildAdminModel(A: any, st: AdminUiState, api: AdminModelApi) {
           fg: C.tinta,
           pick: () => {
             if (req) return;
-            api.setDraft(st.sel, (d) => { d.inactiveMinutes = opt.minutes; });
+            api.setDraft(activeSel, (d) => { d.inactiveMinutes = opt.minutes; });
           },
         };
       }),
@@ -1514,7 +1525,7 @@ export function buildAdminModel(A: any, st: AdminUiState, api: AdminModelApi) {
         if (req) {
           return "Hay un cambio pendiente de aprobación clínica. Aquí se ve lo vigente (aún no aplicado). Cuando la líder apruebe, se actualiza esta matriz y la app del paciente.";
         }
-        const sel = String(st.sel || selCode);
+        const sel = String(activeSel);
         const dKey = pathTerrNow ? pathTerrNow + "|" + sel : sel;
         const hasLocal =
           !!(st.pathDraftDirty && (st.pathDraftDirty[dKey] || st.pathDraftDirty[sel])) &&
@@ -1592,12 +1603,20 @@ export function buildAdminModel(A: any, st: AdminUiState, api: AdminModelApi) {
             s.territories = (s.territories || []).filter(x => x.name !== t.name).concat([t]);
             s.terrOv = s.terrOv || {};
             s.terrOv[t.name] = Object.assign({}, s.terrOv[t.name], { content: t.content || content });
-            if (typeof A.ensureTerrRules === 'function') A.ensureTerrRules(s, t.name);
+            // Territorio nuevo: cuestionario y niveles vacíos (se arman y envían a aprobación).
+            if (typeof A.ensureTerrRules === 'function') A.ensureTerrRules(s, t.name, { empty: true });
+            else if (typeof A.emptyTerrRulesPack === 'function') {
+              s.rules = s.rules || {};
+              s.rules.byTerr = s.rules.byTerr || {};
+              s.rules.byTerr[t.name] = A.emptyTerrRulesPack();
+            }
           });
           api.setState({
             terrForm: false,
             ef: Object.assign({}, st.ef, { terr: name }),
             pathTerr: name,
+            rd: null,
+            rulesMsg: '',
             msg: 'Territorio ' + name + ' creado. Configure su ruta en Rutas.',
             msgActions: [
               { label: 'Configurar ruta', go: () => api.go('paths', { pathTerr: name, pathTab: '1', msg: '' }) },

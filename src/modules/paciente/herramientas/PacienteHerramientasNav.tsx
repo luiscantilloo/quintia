@@ -54,9 +54,8 @@ export function PacienteHerramientasNav({ items }: { items: NavItem[] }) {
   return (
     <div
       role="tablist"
-      className="grid w-full shrink-0 border-t border-[#E5E0D5] bg-white px-0.5 pt-1.5"
+      className="grid h-[84px] w-full shrink-0 border-t border-[#E4E0EA] bg-white px-1.5 pb-2"
       style={{
-        paddingBottom: 10,
         gridTemplateColumns: `repeat(${n}, minmax(0, 1fr))`,
       }}
     >
@@ -70,18 +69,18 @@ export function PacienteHerramientasNav({ items }: { items: NavItem[] }) {
           disabled={t.disabled}
           onClick={t.go}
           title={t.disabled ? "Próximamente" : t.name}
-          className={`relative flex min-h-14 flex-col items-center justify-center gap-0.5 border-0 bg-transparent px-0.5 font-mono outline-none after:pointer-events-none after:absolute after:right-1 after:bottom-0 after:left-1 after:h-[3px] after:content-[''] ${
+          className={`relative flex h-full flex-col items-center justify-center gap-0.5 border-0 border-b-4 bg-transparent px-0.5 font-texto outline-none ${
             t.disabled
-              ? "cursor-not-allowed text-[#6B7280]/50 after:bg-transparent"
+              ? "cursor-not-allowed border-transparent text-[#6B7280]/50"
               : t.on
-                ? "cursor-pointer font-semibold !text-[#0F2D3B] after:bg-[#31C6E6]"
-                : "cursor-pointer font-medium text-[#6B7280] after:bg-transparent"
+                ? "cursor-pointer border-[#6C04C9] font-bold !text-[#0F2D3B]"
+                : "cursor-pointer border-transparent font-medium text-[#0F2D3B]"
           }`}
         >
-          <span className="grid h-7 place-items-center">
+          <span className="grid h-[30px] place-items-center">
             <NavIcon id={t.id} active={t.on} disabled={t.disabled} />
           </span>
-          <span className={`max-w-full truncate text-center ${labelClass}`}>
+          <span className={`max-w-full truncate text-center text-[15px] ${labelClass}`}>
             {t.navLabel}
           </span>
         </button>

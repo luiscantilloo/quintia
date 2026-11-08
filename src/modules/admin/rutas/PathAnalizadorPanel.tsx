@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { QuintiaGameIcon } from "@/modules/admin/rutas/QuintiaGameIcon";
 
 type Fuente = {
@@ -199,30 +199,62 @@ export function PathAnalizadorPanel({
   fuentes,
   cfg,
   onPrev,
+  onSaveVersion,
 }: {
   fuentes: Fuente[];
   cfg: AnalizadorCfg;
   onPrev?: () => void;
+  /** Persiste borrador vN+1 y lo manda a aprobación clínica. */
+  onSaveVersion?: (draft: {
+    partidas: number;
+    dias: number;
+    descarta: number;
+    sens: string;
+    plazo: number;
+    fuentes: Record<string, boolean>;
+    sugerencias: string[];
+  }) => void;
 }) {
+  const cfgPartidas = Number.isFinite(cfg.partidas) ? cfg.partidas : 10;
+  const cfgDias = Number.isFinite(cfg.dias) ? cfg.dias : 14;
+  const cfgDescarta = Number.isFinite(cfg.descarta) ? cfg.descarta : 3;
+  const cfgSens = cfg.sens || "Media";
+  const cfgPlazo = Number.isFinite(cfg.plazo) ? cfg.plazo : 7;
+  const cfgSugs = cfg.sugerencias || [
+    "Repetir la medición en 2 semanas",
+    "Conversar en la próxima sesión",
+    "Seguir observando",
+    "Revisar la constancia con la persona",
+  ];
+
   const [fuentesOn, setFuentesOn] = useState<Record<string, boolean>>(() => {
     const m: Record<string, boolean> = {};
     for (const f of fuentes) m[f.id] = f.on !== false;
     return m;
   });
-  const [partidas, setPartidas] = useState(cfg.partidas || 10);
-  const [dias, setDias] = useState(cfg.dias || 14);
-  const [descarta, setDescarta] = useState(cfg.descarta || 3);
-  const [sens, setSens] = useState(cfg.sens || "Media");
-  const [plazo, setPlazo] = useState(cfg.plazo || 7);
-  const [sugs, setSugs] = useState(
-    () => cfg.sugerencias || [
-      "Repetir la medición en 2 semanas",
-      "Conversar en la próxima sesión",
-      "Seguir observando",
-      "Revisar la constancia con la persona",
-    ],
-  );
+  const [partidas, setPartidas] = useState(cfgPartidas);
+  const [dias, setDias] = useState(cfgDias);
+  const [descarta, setDescarta] = useState(cfgDescarta);
+  const [sens, setSens] = useState(cfgSens);
+  const [plazo, setPlazo] = useState(cfgPlazo);
+  const [sugs, setSugs] = useState(() => cfgSugs);
   const [msg, setMsg] = useState("");
+
+  // Tras aprobar en clínico + hidratar, cfg cambia: hay que refrescar el estado local.
+  useEffect(() => {
+    const m: Record<string, boolean> = {};
+    for (const f of fuentes) m[f.id] = f.on !== false;
+    setFuentesOn(m);
+    setPartidas(cfgPartidas);
+    setDias(cfgDias);
+    setDescarta(cfgDescarta);
+    setSens(cfgSens);
+    setPlazo(cfgPlazo);
+    setSugs(cfgSugs);
+    setMsg("");
+    // Solo cuando llega una versión / valores vigentes nuevos (no en cada tecla).
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [cfg.version, cfgPartidas, cfgDias, cfgDescarta, cfgSens, cfgPlazo]);
 
   const dirty = useMemo(() => {
     const baseFuentes = Object.fromEntries(
@@ -233,20 +265,12 @@ export function PathAnalizadorPanel({
     );
     return (
       fuentesChanged ||
-      partidas !== (cfg.partidas || 10) ||
-      dias !== (cfg.dias || 14) ||
-      descarta !== (cfg.descarta || 3) ||
-      sens !== (cfg.sens || "Media") ||
-      plazo !== (cfg.plazo || 7) ||
-      JSON.stringify(sugs) !==
-        JSON.stringify(
-          cfg.sugerencias || [
-            "Repetir la medición en 2 semanas",
-            "Conversar en la próxima sesión",
-            "Seguir observando",
-            "Revisar la constancia con la persona",
-          ],
-        )
+      partidas !== cfgPartidas ||
+      dias !== cfgDias ||
+      descarta !== cfgDescarta ||
+      sens !== cfgSens ||
+      plazo !== cfgPlazo ||
+      JSON.stringify(sugs) !== JSON.stringify(cfgSugs)
     );
   }, [
     fuentes,
@@ -257,7 +281,12 @@ export function PathAnalizadorPanel({
     sens,
     plazo,
     sugs,
-    cfg,
+    cfgPartidas,
+    cfgDias,
+    cfgDescarta,
+    cfgSens,
+    cfgPlazo,
+    cfgSugs,
   ]);
 
   const nOn = fuentes.filter((f) => fuentesOn[f.id] !== false).length;
@@ -363,8 +392,11 @@ export function PathAnalizadorPanel({
             Antes de leer cambios
           </p>
           <p className="mt-2 font-texto text-[13px] leading-relaxed text-nara-tinta/60">
-            {partidas} partidas en al menos {dias} días · se descartan las{" "}
-            {descarta} primeras por aprendizaje.
+            {partidas} partida{partidas === 1 ? "" : "s"} en al menos {dias} día
+            {dias === 1 ? "" : "s"}
+            {descarta === 0
+              ? " · sin descartar partidas de aprendizaje."
+              : ` · las ${descarta} primeras no cuentan (práctica / aprendizaje).`}
           </p>
           <div className="mt-4 flex flex-col gap-3.5">
             <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
@@ -372,7 +404,7 @@ export function PathAnalizadorPanel({
                 Partidas necesarias
               </span>
               <Segment
-                opts={[6, 10, 15]}
+                opts={[1, 6, 10, 15]}
                 value={partidas}
                 onChange={(v) => {
                   setPartidas(Number(v));
@@ -385,7 +417,7 @@ export function PathAnalizadorPanel({
                 Días como mínimo
               </span>
               <Segment
-                opts={[7, 14, 21]}
+                opts={[1, 7, 14, 21]}
                 value={dias}
                 onChange={(v) => {
                   setDias(Number(v));
@@ -393,18 +425,25 @@ export function PathAnalizadorPanel({
                 }}
               />
             </div>
-            <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-              <span className="font-texto text-sm text-nara-tinta/70">
-                Descartar primeras
-              </span>
-              <Segment
-                opts={[2, 3, 5]}
-                value={descarta}
-                onChange={(v) => {
-                  setDescarta(Number(v));
-                  setMsg("");
-                }}
-              />
+            <div className="flex flex-col gap-1.5">
+              <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+                <span className="font-texto text-sm text-nara-tinta/70">
+                  Ignorar primeras (aprendizaje)
+                </span>
+                <Segment
+                  opts={[0, 2, 3, 5]}
+                  value={descarta}
+                  onChange={(v) => {
+                    setDescarta(Number(v));
+                    setMsg("");
+                  }}
+                />
+              </div>
+              <p className="font-texto text-[12px] leading-snug text-nara-tinta/50">
+                Las primeras partidas suelen ser de práctica. El analizador las
+                salta y arma la línea base con las siguientes.{" "}
+                <span className="font-medium text-nara-tinta/65">0 = no ignora ninguna.</span>
+              </p>
             </div>
           </div>
         </section>
@@ -580,8 +619,17 @@ export function PathAnalizadorPanel({
             disabled={!dirty}
             onClick={() => {
               if (!dirty) return;
+              onSaveVersion?.({
+                partidas,
+                dias,
+                descarta,
+                sens,
+                plazo,
+                fuentes: fuentesOn,
+                sugerencias: sugs,
+              });
               setMsg(
-                `Versión ${version + 1} lista. Se envía con el paquete en 4 · Envío.`,
+                `Versión ${version + 1} enviada a aprobación clínica. Sigue vigente la v${version} hasta que la clínica apruebe.`,
               );
             }}
             className={`h-11 rounded-xl px-5 font-texto text-sm font-semibold transition ${

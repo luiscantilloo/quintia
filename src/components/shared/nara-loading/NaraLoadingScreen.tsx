@@ -6,7 +6,7 @@ import { BRAND } from "@/lib/brand";
 import { QuintiaMark } from "@/components/shared/brand/QuintiaLogo";
 
 /**
- * Carga a pantalla completa: profundidad Quintia + símbolo Q (degradado).
+ * Carga a pantalla completa · marfil Quintia (mismo tono que el shell).
  * Portal a body para cubrir topbar, shell y cualquier stacking context.
  */
 export function NaraLoadingScreen({
@@ -35,60 +35,36 @@ export function NaraLoadingScreen({
       role="status"
       aria-busy="true"
       aria-label={`Cargando ${BRAND.name}`}
-      className={`grid place-items-center ${className}`.trim()}
-      style={{
-        position: "fixed",
-        inset: 0,
-        zIndex: 99999,
-        width: "100vw",
-        height: "100dvh",
-        minWidth: "100%",
-        minHeight: "100%",
-        margin: 0,
-        background: "#0F2D3B",
-        display: "grid",
-        placeItems: "center",
-      }}
+      className={`fixed inset-0 z-[99999] grid h-dvh min-h-full w-screen min-w-full place-items-center overflow-hidden bg-[#F7F5EF] ${className}`.trim()}
     >
-      {/* Degradado vivo de marca */}
       <div
         aria-hidden
+        className="pointer-events-none absolute inset-0"
         style={{
-          position: "absolute",
-          inset: 0,
-          background:
-            "radial-gradient(ellipse 60% 50% at 70% 20%, rgba(108,4,201,0.35) 0%, transparent 55%), radial-gradient(ellipse 50% 45% at 20% 80%, rgba(49,198,230,0.28) 0%, transparent 50%), radial-gradient(ellipse 40% 35% at 55% 90%, rgba(97,240,210,0.2) 0%, transparent 55%)",
-          pointerEvents: "none",
+          backgroundImage:
+            "radial-gradient(ellipse 55% 40% at 18% 12%, rgba(49,198,230,0.18), transparent 58%), radial-gradient(ellipse 45% 35% at 88% 18%, rgba(97,240,210,0.16), transparent 52%), radial-gradient(ellipse 50% 40% at 70% 92%, rgba(108,4,201,0.07), transparent 55%)",
         }}
       />
-      <div className="relative z-10 flex flex-col items-center gap-5">
-        <div
-          className="motion-safe:animate-[pl-pulse_2.4s_ease-in-out_infinite]"
-          style={{
-            width: 148,
-            height: 148,
-            borderRadius: 40,
-            background: "#F7F5EF",
-            display: "grid",
-            placeItems: "center",
-            boxShadow: "0 20px 50px rgba(0,0,0,0.25)",
-          }}
-        >
-          <QuintiaMark size={96} />
+
+      <div className="relative z-10 flex flex-col items-center gap-6 px-6">
+        <div className="motion-safe:animate-[pl-fade-up_0.55s_ease-out_both]">
+          <QuintiaMark size={72} />
         </div>
-        <div className="flex flex-col items-center gap-1.5">
-          <p
-            className="font-titulos text-[28px] font-extrabold tracking-[-0.02em]"
-            style={{ margin: 0, color: "#F7F5EF" }}
-          >
+
+        <div className="flex flex-col items-center gap-2 motion-safe:animate-[pl-fade-up_0.55s_ease-out_0.08s_both]">
+          <p className="m-0 font-titulos text-[1.5rem] font-extrabold tracking-[-0.02em] text-[#0F2D3B]">
             {BRAND.name}
           </p>
-          <p
-            className="font-texto text-[13px] font-medium"
-            style={{ margin: 0, color: "rgba(247,245,239,0.65)" }}
-          >
-            Cinco fuerzas. Infinitas posibilidades.
+          <p className="m-0 font-texto text-sm font-medium text-[#5B6770]">
+            Un momento…
           </p>
+        </div>
+
+        <div
+          aria-hidden
+          className="mt-1 h-[3px] w-36 overflow-hidden rounded-full bg-[#E5E0D5] motion-safe:animate-[pl-fade-up_0.55s_ease-out_0.14s_both]"
+        >
+          <div className="h-full w-1/2 rounded-full bg-[#31C6E6] motion-safe:animate-[pl-load-bar_1.1s_ease-in-out_infinite]" />
         </div>
       </div>
     </div>

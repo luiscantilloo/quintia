@@ -3,6 +3,7 @@
  * Sustituye el servicio agregado legacy `juegos`.
  */
 
+/** @deprecated La matriz ya no usa chips de frecuencia en juegos (solo on/off). */
 export const GAME_FREQS = ["2h", "8h", "Diario"];
 
 /** Ids de los 4 juegos del prototipo QUINTIA. */
@@ -16,29 +17,29 @@ export const GAME_SERVICES = [
     id: "frutas",
     name: "Frutas",
     navLabel: "Frutas",
-    note: "Atención visual y planificación · cada 2h, cada 8h o diario",
-    freqs: GAME_FREQS.slice(),
+    note: "Atención visual y planificación",
+    freqs: [],
   },
   {
     id: "simon",
     name: "Simón dice",
     navLabel: "Simón",
-    note: "Memoria de trabajo y atención · cada 2h, cada 8h o diario",
-    freqs: GAME_FREQS.slice(),
+    note: "Memoria de trabajo y atención",
+    freqs: [],
   },
   {
     id: "duelo",
     name: "Duelo de cartas",
     navLabel: "Duelo",
-    note: "Flexibilidad y decisiones · cada 2h, cada 8h o diario",
-    freqs: GAME_FREQS.slice(),
+    note: "Flexibilidad y decisiones",
+    freqs: [],
   },
   {
     id: "sudoku",
     name: "Sudoku",
     navLabel: "Sudoku",
-    note: "Lógica y planificación · cada 2h, cada 8h o diario",
-    freqs: GAME_FREQS.slice(),
+    note: "Lógica y planificación",
+    freqs: [],
   },
 ];
 

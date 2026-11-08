@@ -40,9 +40,9 @@ export function buildPathServiceRows(
           else d.s[sv.id] = sv.freqs[0] || "Activo";
         });
       },
-      // IA / Analizador: solo interruptor; sin chips de frecuencia.
-      // Apagado: ningún chip seleccionado (evita «2h» amarillo con toggle off).
-      freqs: sv.id === "ia" || sv.id === "analizador"
+      // IA / Analizador / juegos: solo interruptor; sin chips 2h·8h·Diario.
+      // Apagado: ningún chip seleccionado.
+      freqs: sv.id === "ia" || sv.id === "analizador" || !(sv.freqs || []).length
         ? []
         : (sv.freqs || []).map((label) => {
             const sel = on && dr.s[sv.id] === label;

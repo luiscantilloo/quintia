@@ -27,6 +27,15 @@ export const APP_STATE_SLICES = [
   "moodLogs",
   /** Partidas de juegos (Sudoku) por paciente. */
   "gameLogs",
+  /** Config vigente del analizador + borrador pendiente de aprobación. */
+  "anCfg",
+  "anDraft",
+  /** Parámetros de juegos (nivel, movimientos, sonido…) por módulo. */
+  "gameCfg",
+  /** Avisos del analizador (ámbar; no crisis). */
+  "avisos",
+  /** Snapshot por paciente: estado, series, bandas, lectura. */
+  "analizadorByPid",
   "recursos",
   "activity",
   "accessLog",

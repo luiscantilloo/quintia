@@ -28,14 +28,11 @@ export function ClinShell({ children }: { children: ReactNode }) {
 export function ClinHeader({ showSub }: { showSub?: boolean }) {
   return (
     <header className="[animation:clinIn_.45s_cubic-bezier(.22,1,.36,1)_both]">
-      <p className="m-0 font-mono text-[12px] font-medium uppercase tracking-[0.14em] text-[#31C6E6]">
-        Atención clínica
-      </p>
-      <h2 className="m-0 mt-1.5 font-titulos text-[clamp(26px,6vw,32px)] font-extrabold tracking-tight text-[#0F2D3B]">
-        Psicólogo clínico
+      <h2 className="m-0 font-titulos text-[30px] font-bold tracking-tight text-[#0F2D3B]">
+        Clínico
       </h2>
       {showSub ? (
-        <p className="m-0 mt-1 font-texto text-[15px] text-[#5B6770]">
+        <p className="m-0 mt-1 font-texto text-[18px] text-[#4D5D66]">
           Espacio para sus citas con el equipo
         </p>
       ) : null}

@@ -60,15 +60,15 @@ export function MoodPanel({ patientId }: { patientId: string }) {
       />
 
       <header className="[animation:moodIn_.45s_cubic-bezier(.22,1,.36,1)_both]">
-        <p className="m-0 font-mono text-[12px] font-medium uppercase tracking-[0.14em] text-[#31C6E6]">
-          Su ánimo
+        <p className="m-0 font-mono text-[15px] font-medium tracking-[0.14em] text-[#6C04C9]">
+          ÁNIMO
         </p>
-        <h2 className="m-0 mt-1.5 font-titulos text-[clamp(26px,6vw,32px)] font-extrabold tracking-tight">
-          ¿Cómo se siente hoy?
+        <h2 className="m-0 mt-1.5 font-titulos text-[30px] font-bold tracking-tight text-[#0F2D3B]">
+          Estado de ánimo
         </h2>
-        <p className="m-0 mt-1.5 font-texto text-[15px] leading-relaxed text-[#5B6770]">
+        <p className="m-0 mt-1.5 font-texto text-[18px] leading-snug text-[#4D5D66]">
           {showPicker
-            ? `Toque una opción · ${freqInfo.label}`
+            ? `¿Cómo se siente hoy? · ${freqInfo.label}`
             : status.nextHint || `Frecuencia: ${freqInfo.label}`}
         </p>
       </header>

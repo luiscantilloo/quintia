@@ -225,6 +225,10 @@ const CL = [
   ["contacto", "Contacto por teléfono o WhatsApp"],
   ["remision", "Compartir mi caso con una institución si me remiten"],
   ["investigacion", "Uso anónimo para investigación"],
+  [
+    "analizador",
+    "Que mi desempeño en juegos alimente el analizador (solo mi clínico lo ve)",
+  ],
 ] as const;
 
 const fmt = (x: number) =>
@@ -444,6 +448,20 @@ export function usePacienteScreen() {
     const fromUrl = pacienteTabForPath(pathname || "/paciente");
     setTabRaw((prev) => (prev === fromUrl ? prev : fromUrl));
   }, [pathname]);
+
+  // SYN: vaciar cola de partidas offline al recuperar señal.
+  useEffect(() => {
+    const flush = () => {
+      if (typeof navigator !== "undefined" && navigator.onLine === false) return;
+      void import("@/lib/nara-services/analizador").then((m) => {
+        const n = m.flushPartidasPendientes(store);
+        if (n > 0) void flushPersist(store);
+      });
+    };
+    flush();
+    window.addEventListener("online", flush);
+    return () => window.removeEventListener("online", flush);
+  }, [store]);
   const [topics, setTopics] = useState<[string, boolean][]>([
     ["El miedo con las réplicas pequeñas", true],
     ["Preocupación por la casa", true],
@@ -2499,7 +2517,8 @@ export function usePacienteScreen() {
   }));
 
   // P-01 (TRL 2026-10-10): en el primer ingreso a la app la persona acepta el consentimiento de uso de la
-  // app antes de que se registre nada desde ella. Queda en consents[patientId].appAt y appVersion.
+  // app antes de que se registre nada desde ella. Queda en consents[patientId].appAt, appVersion y
+  // analizador:true (el mismo «Acepto» activa que los juegos alimenten el analizador).
   const backupAppAt = readAppConsentBackup(consentAliasKeys);
   const hasAppConsent =
     appConsentAccepted ||
@@ -2577,6 +2596,7 @@ export function usePacienteScreen() {
         ...(s.consents[canonical] || {}),
         appAt: at,
         appVersion: "app-v1",
+        analizador: true,
       };
       // Escribir en patientId (API) y aliases locales para no perder el check al leer.
       keys.forEach((k) => {
@@ -2590,6 +2610,7 @@ export function usePacienteScreen() {
           ...((store.get().consents || {})[canonical] || {}),
           appAt: at,
           appVersion: "app-v1",
+          analizador: true,
         },
       },
     };

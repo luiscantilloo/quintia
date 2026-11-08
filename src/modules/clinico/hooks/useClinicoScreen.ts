@@ -21,7 +21,6 @@ import {
   clinicoPathForView,
   clinicoViewForPath,
 } from "@/modules/clinico/routes";
-import { collapsePathListForHub } from "@/lib/nara-services/gamesCatalog.js";
 import { buildAnalizadorPanel } from "@/modules/clinico/analizador/buildAnalizadorPanel";
 
 const INSTS = [
@@ -136,6 +135,36 @@ export function useClinicoScreen() {
       };
     });
   }, [pathname, searchParams, router]);
+
+  // ANA: recalcula snaps 1×/min al entrar a Inicio o Analizador.
+  useEffect(() => {
+    if (st.view !== "analizador" && st.view !== "home") return;
+    const A = store;
+    const last = (A.get?.() as { _anRecalcAt?: number } | undefined)?._anRecalcAt;
+    if (last && Date.now() - last < 60_000) return;
+    const ids = Object.keys(A.PATIENTS || {});
+    void import("@/lib/nara-services/analizador").then((m) => {
+      m.recalcularTodos(A, ids);
+      A.set?.((s: { _anRecalcAt?: number }) => {
+        s._anRecalcAt = Date.now();
+      });
+      void flushPersist(A);
+      setState({ tick: Date.now() });
+    });
+  }, [st.view, store, setState]);
+
+  // Helper de prueba en consola: window.__seedAnalizadorDemo(pid)
+  useEffect(() => {
+    void import("@/lib/nara-services/analizador").then((m) => {
+      (window as unknown as { __seedAnalizadorDemo?: Function }).__seedAnalizadorDemo =
+        (pid: string, opts?: { game?: string; peor?: boolean }) => {
+          const r = m.seedAnalizadorDemo(store, pid || stRef.current.pid, opts);
+          void flushPersist(store);
+          setState({ tick: Date.now(), msg: "Semilla analizador lista." });
+          return r;
+        };
+    });
+  }, [store, setState]);
 
   // Inactividad: solo cambia el estado (derivado / inactiveLock). Sin alertas ni notifs.
 
@@ -1835,6 +1864,68 @@ export function useClinicoScreen() {
     (S.pathRequests || []).forEach((rq) => {
       const stRq = String(rq.status || "pending").toLowerCase();
       if (stRq !== "pending") return;
+      // Aprobación de versión del analizador (ADM/VER)
+      if (rq.tipo === "analizador" || rq.code === "ANALIZADOR") {
+        const draftAn = rq.draft?.anCfg || {};
+        approvals.push({
+          kind: "analizador",
+          code: "ANALIZADOR",
+          title: "Analizador · versión " + (draftAn.version || "?"),
+          meta: "Tamizaje · pendiente de aprobación clínica",
+          riskLabel: "",
+          digLabel: "",
+          riskColor: "#6C04C9",
+          months: null,
+          inactiveMinutes: null,
+          kept: [],
+          changed: [],
+          added: [],
+          removed: [],
+          lines: Array.isArray(rq.partes) ? rq.partes : [
+            "Sensibilidad " + (draftAn.sens || "Media"),
+            "Línea base " + (draftAn.partidas || 10) + " partidas",
+            "Plazo avisos " + (draftAn.plazo || 7) + " días",
+          ],
+          approve: () => {
+            try {
+              void import("@/lib/nara-services/analizador").then((m) => {
+                const ok = m.applyAnCfgApproval(A, rq, true);
+                if (!ok) {
+                  setState({
+                    msg: "No se pudo aplicar: faltaba el borrador de la versión.",
+                  });
+                  return;
+                }
+                void import("@/lib/store/persist").then((p) =>
+                  p.flushPersistWhenReady?.(A),
+                );
+                setState({
+                  msg:
+                    "Analizador v" +
+                    (draftAn.version || "?") +
+                    " aprobado. Ya es la config vigente.",
+                  tick: Date.now(),
+                });
+              });
+            } catch {
+              setState({ msg: "No se pudo aprobar el analizador." });
+            }
+          },
+          reject: () => {
+            void import("@/lib/nara-services/analizador").then((m) => {
+              m.applyAnCfgApproval(A, rq, false);
+              void import("@/lib/store/persist").then((p) =>
+                p.flushPersistWhenReady?.(A),
+              );
+              setState({
+                msg: "Versión del analizador rechazada. Sigue la anterior.",
+                tick: Date.now(),
+              });
+            });
+          },
+        });
+        return;
+      }
       const { r, d } = A.parseCode(rq.code);
       const pathCtx = {
         terr: rq.scope && rq.scope !== "all" ? rq.scope : null,
@@ -2381,9 +2472,32 @@ export function useClinicoScreen() {
       })),
       avisosVistos: st.avisosVistos || [],
     });
+    const quien =
+      (A.session?.() as { name?: string } | null)?.name || "Clínico";
     const analizadorAvisos = analizadorPanel.avisos.map((a) => ({
       ...a,
       abrir: () => openFile(a.pid),
+      tomar: () => {
+        void import("@/lib/nara-services/analizador").then((m) => {
+          m.tomarAviso(A, a.id, quien);
+          void import("@/lib/store/persist").then((p) =>
+            p.flushPersistWhenReady?.(A),
+          );
+          setState({ tick: Date.now(), msg: "Aviso tomado." });
+        });
+      },
+      decidir: (tipo: string) => {
+        void import("@/lib/nara-services/analizador").then((m) => {
+          m.decidirAviso(A, a.id, { tipo, quien });
+          void import("@/lib/store/persist").then((p) =>
+            p.flushPersistWhenReady?.(A),
+          );
+          setState({
+            tick: Date.now(),
+            msg: "Aviso cerrado · decisión registrada en la ficha.",
+          });
+        });
+      },
       vista: () =>
         setState({
           avisosVistos: [...(stRef.current.avisosVistos || []), a.id],
@@ -2568,16 +2682,14 @@ export function useClinicoScreen() {
           ...(P.ctx && typeof P.ctx === "object" ? P.ctx : {}),
           terr: terr || undefined,
         };
-        // Misma fuente que la app del paciente: pathOverrides del territorio ('' = off).
-        const list = collapsePathListForHub(
-          A.pathList(pc2.r, pc2.d, null, ctx) || [],
-        );
+        // Ficha clínica: juegos individuales (no hub colapsado).
+        const list = A.pathList(pc2.r, pc2.d, null, ctx) || [];
         return list.map((x: { name: string; freq: string; channel?: string }) => ({
           name: x.name,
           freq: x.freq + (x.channel ? " · " + x.channel : ""),
         }));
       })(),
-      /** Herramientas = ruta aprobada del territorio (igual que el paciente). */
+      /** Herramientas = ruta aprobada del territorio; cada juego = casilla propia. */
       fHerramientas: (() => {
         const pc2 = A.parseCode(P.profile);
         if (pc2.r < 0 || pc2.d < 0) return [];
@@ -2589,9 +2701,7 @@ export function useClinicoScreen() {
           ...(P.ctx && typeof P.ctx === "object" ? P.ctx : {}),
           terr: terr || undefined,
         };
-        const list = collapsePathListForHub(
-          A.pathList(pc2.r, pc2.d, null, ctx) || [],
-        );
+        const list = A.pathList(pc2.r, pc2.d, null, ctx) || [];
         return list.map(
           (x: { id: string; name: string; freq: string; channel?: string }) => ({
             id: x.id,

@@ -271,19 +271,21 @@ function DianaApp({ vm }: { vm: Vm }) {
 
       <div ref={vm.bodyRef} style={{ flex: 1, minHeight: 0, overflowY: "auto", overflowX: "hidden", scrollbarWidth: "none", fontSize: 17 }}>
         {vm.tabHome ? (
-          <div className="flex flex-col gap-4 px-[18px] pb-[22px] pt-3 font-texto [animation:naraTab_.22s_ease-out]">
-            <div className="flex items-center gap-3">
-              <span className="grid size-14 shrink-0 place-items-center rounded-2xl bg-[#E5E0D5]">
-                <img src={tejivaAsset("base")} alt="" className="block h-10 w-10" />
-              </span>
-              <div className="flex min-w-0 flex-col gap-0.5">
-                <p className="m-0 font-mono text-sm font-medium uppercase tracking-[0.12em] text-[#31C6E6]">
+          <div className="flex flex-col gap-4 px-4 pb-6 pt-[18px] font-texto [animation:naraTab_.22s_ease-out]">
+            <div className="flex items-start gap-3.5">
+              <img
+                src={tejivaAsset("base")}
+                alt=""
+                className="block size-14 shrink-0"
+              />
+              <div className="flex min-w-0 flex-col gap-1">
+                <p className="m-0 font-mono text-[15px] font-medium tracking-[0.14em] text-[#6C04C9]">
                   {BRAND.agentName}
                 </p>
-                <h1 className="m-0 font-titulos text-[clamp(22px,5vw,28px)] font-extrabold leading-tight text-[#0F2D3B]">
+                <h1 className="m-0 font-titulos text-[30px] font-bold leading-tight text-[#0F2D3B]">
                   {vm.greet}, {vm.firstName || "Paciente"}
                 </h1>
-                <span className="font-mono text-[13px] text-[#6B7280]">Inicio</span>
+                <span className="text-[20px] text-[#4D5D66]">Inicio</span>
               </div>
             </div>
             <PacienteHomeTools
@@ -802,6 +804,7 @@ function ConsentimientoApp({ onAccept }: { onAccept: () => void }) {
   const puntos = [
     "La app guarda lo que usted registre: su estado de ánimo, sus conversaciones con TEJIVA y sus pedidos de ayuda.",
     "Su psicólogo clínico y el experto de su territorio pueden ver esa información para acompañarle.",
+    "Si juega en la app, su desempeño puede alimentar un analizador que solo ve su psicólogo clínico (no se comparte fuera del equipo).",
     "TEJIVA es un asistente con inteligencia artificial: no reemplaza a su psicólogo ni da diagnósticos.",
     "Si usted reporta una crisis, el equipo clínico le contactará.",
     "Puede retirar su consentimiento cuando quiera: dígaselo a su experto de campo o a su psicólogo.",

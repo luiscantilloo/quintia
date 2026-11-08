@@ -92,7 +92,8 @@ function pickSlices(s, roleId, user) {
   const out = {};
   for (const key of APP_STATE_SLICES) {
     if (roleId && !puedeEscribir(roleId, key)) continue;
-    if (s[key] !== undefined) {
+    // No enviar null: borraría anCfg/anDraft aprobados en Mongo.
+    if (s[key] !== undefined && s[key] !== null) {
       try {
         out[key] = JSON.parse(JSON.stringify(s[key]));
       } catch {
@@ -423,6 +424,18 @@ export async function hydrateAppState(store) {
         timer = null;
       }
       lastSynced = JSON.stringify(pickSlices(store.get(), rolDe(store), sesionDe(store)));
+    }
+    // Si el clínico ya aprobó (pathRequests) pero anCfg no vino del API (rebanada vieja),
+    // materializar y persistir con la lista actualizada de slices.
+    try {
+      const { ensureAnCfgFromApprovals } = await import(
+        "@/lib/nara-services/analizador/cfg.js"
+      );
+      if (ensureAnCfgFromApprovals(store)) {
+        schedulePersist(store);
+      }
+    } catch {
+      /* best-effort */
     }
   } catch (e) {
     lastError = e;

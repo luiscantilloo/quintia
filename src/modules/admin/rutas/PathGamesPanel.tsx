@@ -132,9 +132,14 @@ function SegmentedOptions({
 function GameConfigBody({
   game,
   open,
+  onSaveVersion,
 }: {
   game: PathGame;
   open: boolean;
+  onSaveVersion?: (
+    gameId: string,
+    draftCampos: Record<string, string>,
+  ) => { version?: number } | void;
 }) {
   const base = useMemo(() => {
     const m: Record<string, string> = {};
@@ -206,9 +211,9 @@ function GameConfigBody({
               disabled={!dirty}
               onClick={() => {
                 if (!dirty) return;
-                setSavedMsg(
-                  `Versión ${game.version + 1} lista para el paquete de Envío.`,
-                );
+                const saved = onSaveVersion?.(game.id, draft);
+                const v = Number(saved?.version) || game.version + 1;
+                setSavedMsg(`Versión ${v} vigente. Ya aplica en las partidas nuevas.`);
               }}
               className={`h-10 rounded-xl px-4 font-texto text-sm font-semibold transition ${
                 dirty
@@ -226,7 +231,7 @@ function GameConfigBody({
               </span>
             ) : dirty ? (
               <span className="font-texto text-[13px] text-[#8B4AD4]">
-                Se creará una versión nueva
+                Se creará una versión nueva y aplicará al instante
               </span>
             ) : null}
           </div>
@@ -295,10 +300,15 @@ export function PathGamesPanel({
   games,
   onPrev,
   onNext,
+  onSaveVersion,
 }: {
   games: PathGame[];
   onPrev?: () => void;
   onNext?: () => void;
+  onSaveVersion?: (
+    gameId: string,
+    draftCampos: Record<string, string>,
+  ) => { version?: number } | void;
 }) {
   const [openId, setOpenId] = useState<string | null>(null);
 
@@ -333,9 +343,6 @@ export function PathGamesPanel({
               <span className="hidden font-mono text-[11px] text-nara-tinta/45 sm:inline">
                 v{j.version}
               </span>
-              <span className="rounded-full bg-[#E0EFE5] px-2.5 py-1 font-texto text-xs font-semibold text-[#2C6247]">
-                Activo
-              </span>
               <span
                 className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full transition-[transform,background-color] duration-300 ease-out ${
                   open
@@ -360,7 +367,11 @@ export function PathGamesPanel({
               style={{ gridTemplateRows: open ? "1fr" : "0fr" }}
             >
               <div className="min-h-0 overflow-hidden">
-                <GameConfigBody game={j} open={open} />
+                <GameConfigBody
+                  game={j}
+                  open={open}
+                  onSaveVersion={onSaveVersion}
+                />
               </div>
             </div>
           </div>

@@ -1,24 +1,23 @@
 import { NARA_SERVICE_BY_ID } from "@/lib/nara-services";
 import type { PacienteHerramientaId, PacienteHerramientaMeta } from "./types";
 
-/** Hub de la app: módulos + juegos agrupados (la matriz admin tiene los 4 por separado). */
+/** Hub inferior: Clínico · TEJIVA · Juegos · Ánimo. */
 const PACIENTE_HUB_IDS: PacienteHerramientaId[] = [
-  "mood",
   "clin",
   "ia",
   "juegos",
+  "mood",
 ];
 
-/** Orden y etiquetas = catálogo compartido (`src/lib/nara-services/<id>.js`). */
+/** Orden y etiquetas del hub paciente. */
 export const PACIENTE_HERRAMIENTAS: PacienteHerramientaMeta[] = PACIENTE_HUB_IDS.map(
   (id) => {
     const s = NARA_SERVICE_BY_ID[id];
     if (id === "juegos") {
-      return {
-        id,
-        name: "Juegos",
-        navLabel: "Juegos",
-      };
+      return { id, name: "Juegos", navLabel: "Juegos" };
+    }
+    if (id === "mood") {
+      return { id, name: "Ánimo", navLabel: "Ánimo" };
     }
     return {
       id,

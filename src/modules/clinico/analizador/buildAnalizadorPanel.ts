@@ -1,10 +1,6 @@
-import {
-  computeJuegosStats,
-  listGameHistoryFor,
-} from "@/lib/nara-services/juegos.js";
+import { listGameHistoryFor } from "@/lib/nara-services/juegos.js";
 import { GAME_SERVICES, isGameServiceId } from "@/lib/nara-services/gamesCatalog.js";
 import {
-  ANALIZADOR_BASELINE_N,
   ANALIZADOR_RANK,
   ESTADOS_AN,
   type AnalizadorEstadoId,
@@ -19,6 +15,8 @@ export type AnalizadorAviso = {
   texto: string;
   desde: string;
   plazo: string;
+  estadoAviso: string;
+  senales: string[];
 };
 
 export type AnalizadorCargaRow = {
@@ -33,6 +31,14 @@ export type AnalizadorCargaRow = {
   fg: string;
   resumen: string;
   adh: string;
+  lectura: string;
+  sugerencia: string | null;
+  seriesByGame: Record<string, number[]>;
+  bandByGame: Record<string, [number, number] | null>;
+  habByGame: Record<string, AnalizadorEstadoId>;
+  senales: string[];
+  baseN: number;
+  baseNeed: number;
 };
 
 export type AnalizadorTotal = {
@@ -52,20 +58,23 @@ type PatientLite = {
   adherence?: number | null;
 };
 
+type Snap = {
+  estado?: string;
+  lectura?: string;
+  sugerencia?: string | null;
+  baseN?: number;
+  seriesByGame?: Record<string, number[]>;
+  bandByGame?: Record<string, [number, number] | null>;
+  hab?: Record<string, string>;
+  senales?: string[];
+};
+
 function gameMeta(id: string) {
   const g = GAME_SERVICES.find((x) => x.id === id);
   return {
     nombre: g?.name || id,
     hab: (g?.note || "").split("·")[0]?.trim() || "Habilidad",
   };
-}
-
-/** Estado provisional a partir del historial de juegos (sin series semanales aún). */
-export function estadoDesdeHistorial(
-  completed: number,
-): AnalizadorEstadoId {
-  if (completed < ANALIZADOR_BASELINE_N) return "base";
-  return "estable";
 }
 
 function hasGamesInPath(
@@ -97,9 +106,16 @@ function semanasLabel(p: PatientLite): number | string {
   return Number.isFinite(Number(w)) ? Number(w) : "—";
 }
 
+function asEstado(raw: unknown): AnalizadorEstadoId {
+  const s = String(raw || "base");
+  if (s === "estable" || s === "mejorando" || s === "cambio" || s === "base") {
+    return s;
+  }
+  return "base";
+}
+
 /**
- * Construye totales, avisos y carga del panel Analizador del clínico.
- * Avisos: solo los abiertos del store (`S.avisos`); sin motor de detección aún.
+ * Totales, avisos y carga del Analizador clínico (lee snaps del motor + avisos).
  */
 export function buildAnalizadorPanel(opts: {
   store: {
@@ -116,6 +132,7 @@ export function buildAnalizadorPanel(opts: {
   sinAvisos: boolean;
   carga: AnalizadorCargaRow[];
   anCardTxt: string;
+  avisosAbiertosN: number;
 } {
   const { store, patients } = opts;
   const vistos = new Set(
@@ -127,6 +144,8 @@ export function buildAnalizadorPanel(opts: {
   );
   const S = (typeof store.get === "function" ? store.get() : {}) || {};
   const byId = new Map(patients.map((p) => [p.id, p]));
+  const snaps =
+    (S.analizadorByPid as Record<string, Snap> | undefined) || {};
 
   const counts: Record<AnalizadorEstadoId, number> & { bajaConst: number } = {
     base: 0,
@@ -137,14 +156,15 @@ export function buildAnalizadorPanel(opts: {
   };
 
   const carga: AnalizadorCargaRow[] = [];
+  const cfgPartidas =
+    Number((S.anCfg as { partidas?: number } | undefined)?.partidas) || 10;
 
   for (const p of patients) {
-    if (!hasGamesInPath(store, p) && !listGameHistoryFor(store, p.id).length) {
-      continue;
-    }
     const hist = listGameHistoryFor(store, p.id);
-    const stats = computeJuegosStats(hist);
-    const estado = estadoDesdeHistorial(stats.completed);
+    if (!hasGamesInPath(store, p) && !hist.length && !snaps[p.id]) continue;
+
+    const snap = snaps[p.id];
+    const estado = asEstado(snap?.estado);
     counts[estado]++;
     const adhN = p.adherence;
     if (
@@ -156,22 +176,19 @@ export function buildAnalizadorPanel(opts: {
       counts.bajaConst++;
     }
     const e = ESTADOS_AN[estado];
+    const baseN = Number(snap?.baseN) || 0;
     const label =
       estado === "base"
-        ? `Línea base · ${stats.completed} de ${ANALIZADOR_BASELINE_N}`
+        ? `Línea base · ${baseN} de ${cfgPartidas}`
         : e.label;
-    let resumen =
-      estado === "base"
-        ? `${stats.completed} de ${ANALIZADOR_BASELINE_N} partidas`
-        : "Todas las habilidades en su rango habitual";
-    if (
-      estado !== "base" &&
-      typeof adhN === "number" &&
-      adhN < 50
-    ) {
-      resumen = "En su rango habitual · constancia baja";
-    } else if (stats.completed === 0) {
-      resumen = "Aún sin partidas registradas";
+    const lectura =
+      snap?.lectura ||
+      (hist.length
+        ? "Aún sin lectura del motor — abra el panel para recalcular."
+        : "Aún sin partidas registradas");
+    const habByGame: Record<string, AnalizadorEstadoId> = {};
+    for (const [g, h] of Object.entries(snap?.hab || {})) {
+      habByGame[g] = asEstado(h);
     }
     carga.push({
       pid: p.id,
@@ -183,11 +200,22 @@ export function buildAnalizadorPanel(opts: {
       icon: e.icon,
       bg: e.bg,
       fg: e.fg,
-      resumen,
+      resumen: lectura,
       adh:
         adhN == null || !Number.isFinite(Number(adhN))
           ? "—"
           : `${adhN} %`,
+      lectura,
+      sugerencia: snap?.sugerencia || null,
+      seriesByGame: snap?.seriesByGame || {},
+      bandByGame: (snap?.bandByGame || {}) as Record<
+        string,
+        [number, number] | null
+      >,
+      habByGame,
+      senales: Array.isArray(snap?.senales) ? snap!.senales!.map(String) : [],
+      baseN,
+      baseNeed: cfgPartidas,
     });
   }
 
@@ -197,9 +225,16 @@ export function buildAnalizadorPanel(opts: {
       String(a.nombre).localeCompare(String(b.nombre), "es"),
   );
 
-  const rawAvisos = Array.isArray(S.avisos) ? (S.avisos as Record<string, unknown>[]) : [];
+  const rawAvisos = Array.isArray(S.avisos)
+    ? (S.avisos as Record<string, unknown>[])
+    : [];
   const avisos: AnalizadorAviso[] = rawAvisos
-    .filter((a) => a && a.estado === "abierto" && !vistos.has(String(a.id)))
+    .filter(
+      (a) =>
+        a &&
+        (a.estado === "abierto" || a.estado === "tomado") &&
+        !vistos.has(String(a.id)),
+    )
     .map((a) => {
       const pid = String(a.pid || "");
       const p = byId.get(pid);
@@ -207,10 +242,15 @@ export function buildAnalizadorPanel(opts: {
       const meta = gameMeta(gameId);
       const desdeN = Number(a.desde);
       const plazoN = Number(a.plazo);
-      const rest =
-        Number.isFinite(desdeN) && Number.isFinite(plazoN)
-          ? Math.max(0, plazoN - desdeN)
-          : null;
+      const created = Number(a.createdAt) || 0;
+      const daysOpen = created
+        ? Math.max(0, Math.floor((Date.now() - created) / 86400000))
+        : Number.isFinite(desdeN)
+          ? desdeN
+          : 0;
+      const rest = Number.isFinite(plazoN)
+        ? Math.max(0, plazoN - daysOpen)
+        : null;
       return {
         id: String(a.id || `${pid}-${gameId}`),
         pid,
@@ -218,15 +258,16 @@ export function buildAnalizadorPanel(opts: {
         juego: meta.nombre,
         hab: meta.hab,
         texto: String(a.texto || ""),
-        desde: Number.isFinite(desdeN)
-          ? desdeN === 0
+        desde:
+          daysOpen === 0
             ? "hoy"
-            : `hace ${desdeN} día${desdeN === 1 ? "" : "s"}`
-          : "reciente",
+            : `hace ${daysOpen} día${daysOpen === 1 ? "" : "s"}`,
         plazo:
           rest == null
             ? "plazo por definir"
             : `${rest} día${rest === 1 ? "" : "s"} restantes`,
+        estadoAviso: String(a.estado || "abierto"),
+        senales: Array.isArray(a.senales) ? a.senales.map(String) : [],
       };
     });
 
@@ -254,10 +295,19 @@ export function buildAnalizadorPanel(opts: {
     },
   ];
 
-  const nCambio = counts.cambio + avisos.length;
-  const anCardTxt = nCambio
-    ? `${nCambio} cambio${nCambio === 1 ? "" : "s"} a revisar`
-    : "sin cambios por revisar";
+  const avisosAbiertosN = avisos.length;
+  const anCardTxt = avisosAbiertosN
+    ? `◆ Avisos · ${avisosAbiertosN}`
+    : counts.cambio
+      ? `${counts.cambio} cambio${counts.cambio === 1 ? "" : "s"} a revisar`
+      : "sin cambios por revisar";
 
-  return { totales, avisos, sinAvisos: avisos.length === 0, carga, anCardTxt };
+  return {
+    totales,
+    avisos,
+    sinAvisos: avisos.length === 0,
+    carga,
+    anCardTxt,
+    avisosAbiertosN,
+  };
 }

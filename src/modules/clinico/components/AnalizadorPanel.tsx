@@ -1,5 +1,9 @@
 "use client";
 
+import { useState } from "react";
+import { AnalizadorFichaModal } from "@/modules/clinico/components/AnalizadorFichaModal";
+import type { AnalizadorEstadoId } from "@/modules/clinico/analizador/estados";
+
 type Total = {
   key: string;
   label: string;
@@ -16,7 +20,11 @@ type Aviso = {
   texto: string;
   desde: string;
   plazo: string;
+  estadoAviso?: string;
+  senales?: string[];
   abrir: () => void;
+  tomar?: () => void;
+  decidir?: (tipo: string) => void;
   vista: () => void;
 };
 
@@ -25,12 +33,21 @@ type CargaRow = {
   nombre: string;
   perfil: string;
   semanas: number | string;
+  estado?: AnalizadorEstadoId;
   label: string;
   icon: string;
   bg: string;
   fg: string;
   resumen: string;
   adh: string;
+  lectura?: string;
+  sugerencia?: string | null;
+  seriesByGame?: Record<string, number[]>;
+  bandByGame?: Record<string, [number, number] | null>;
+  habByGame?: Record<string, AnalizadorEstadoId | string>;
+  senales?: string[];
+  baseN?: number;
+  baseNeed?: number;
   open: () => void;
 };
 
@@ -42,6 +59,14 @@ type Props = {
   goHome?: () => void;
 };
 
+const DECISIONES = [
+  { id: "seguir", label: "Sin cambios · seguir observando" },
+  { id: "repetir", label: "Repetir la medición" },
+  { id: "ajustar", label: "Ajustar la ruta" },
+  { id: "remitir", label: "Remitir a valoración" },
+  { id: "otra", label: "Otra" },
+];
+
 export function AnalizadorPanel({
   totales,
   avisos,
@@ -49,6 +74,9 @@ export function AnalizadorPanel({
   carga,
   goHome,
 }: Props) {
+  const [ficha, setFicha] = useState<CargaRow | null>(null);
+  const [decidirId, setDecidirId] = useState<string | null>(null);
+
   return (
     <div className="mx-auto flex w-full max-w-[1200px] flex-col gap-5">
       {goHome ? (
@@ -106,11 +134,14 @@ export function AnalizadorPanel({
                   {a.nombre}
                 </span>
                 <span className="rounded-md bg-[#FAE7BF] px-2 py-0.5 text-xs font-semibold text-[#6E4705]">
-                  ◆ Cambio a revisar
+                  ◆ {a.estadoAviso === "tomado" ? "En revisión" : "Cambio a revisar"}
                 </span>
               </span>
               <span className="text-[13px] text-texto-secundario">
                 {a.juego} · {a.hab}
+                {a.senales?.length
+                  ? ` · ${a.senales.join(" · ")}`
+                  : ""}
               </span>
               <span className="text-[15px] text-nara-tinta">{a.texto}</span>
               <span className="font-mono text-xs text-[#6E4705]">
@@ -123,16 +154,54 @@ export function AnalizadorPanel({
                 onClick={() => a.abrir()}
                 className="h-10 cursor-pointer rounded-[10px] border-0 bg-nara-tinta px-4 font-texto text-sm font-semibold text-white"
               >
-                Abrir analizador
+                Abrir ficha
               </button>
-              <button
-                type="button"
-                onClick={() => a.vista()}
-                className="h-10 cursor-pointer rounded-[10px] border border-linea bg-nara-blanco px-4 font-texto text-sm text-nara-tinta"
-              >
-                Marcar como vista
-              </button>
+              {a.estadoAviso === "abierto" && a.tomar ? (
+                <button
+                  type="button"
+                  onClick={() => a.tomar?.()}
+                  className="h-10 cursor-pointer rounded-[10px] border border-[#E4C98C] bg-[#FAE7BF] px-4 font-texto text-sm font-semibold text-[#6E4705]"
+                >
+                  Tomar
+                </button>
+              ) : null}
+              {a.decidir ? (
+                <button
+                  type="button"
+                  onClick={() =>
+                    setDecidirId((id) => (id === a.id ? null : a.id))
+                  }
+                  className="h-10 cursor-pointer rounded-[10px] border border-linea bg-nara-blanco px-4 font-texto text-sm text-nara-tinta"
+                >
+                  Decidir y cerrar
+                </button>
+              ) : (
+                <button
+                  type="button"
+                  onClick={() => a.vista()}
+                  className="h-10 cursor-pointer rounded-[10px] border border-linea bg-nara-blanco px-4 font-texto text-sm text-nara-tinta"
+                >
+                  Marcar como vista
+                </button>
+              )}
             </div>
+            {decidirId === a.id && a.decidir ? (
+              <div className="flex w-full flex-wrap gap-2 border-t border-[#E4C98C]/60 pt-3">
+                {DECISIONES.map((d) => (
+                  <button
+                    key={d.id}
+                    type="button"
+                    onClick={() => {
+                      a.decidir?.(d.id);
+                      setDecidirId(null);
+                    }}
+                    className="h-9 cursor-pointer rounded-lg border border-linea bg-white px-3 font-texto text-[13px] text-nara-tinta"
+                  >
+                    {d.label}
+                  </button>
+                ))}
+              </div>
+            ) : null}
           </div>
         ))}
         {sinAvisos ? (
@@ -152,7 +221,7 @@ export function AnalizadorPanel({
             <button
               key={c.pid}
               type="button"
-              onClick={() => c.open()}
+              onClick={() => setFicha(c)}
               className="grid w-full cursor-pointer grid-cols-1 items-center gap-3 border-0 border-b border-[#EFEAE0] bg-transparent px-[18px] py-3.5 text-left font-texto text-nara-tinta last:border-b-0 sm:grid-cols-[minmax(180px,1.3fr)_minmax(170px,1fr)_minmax(220px,2fr)_90px] sm:gap-3"
             >
               <span className="flex flex-col">
@@ -181,6 +250,10 @@ export function AnalizadorPanel({
           ) : null}
         </div>
       </div>
+
+      {ficha ? (
+        <AnalizadorFichaModal ficha={ficha} onClose={() => setFicha(null)} />
+      ) : null}
     </div>
   );
 }

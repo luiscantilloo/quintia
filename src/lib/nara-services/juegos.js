@@ -141,15 +141,24 @@ function normalizeEntry(row) {
       durationMs = 0;
     }
   }
+  const gameRaw = String(row.game || "sudoku").trim().toLowerCase();
+  const game = GAME_IDS.includes(gameRaw) ? gameRaw : "sudoku";
   return {
     type: "juego",
-    game: "sudoku",
+    game,
     puzzleId,
     status,
     startedAt,
     completedAt: completedAt || null,
     durationMs,
     at: entryAt(row) || startedAt || Date.now(),
+    ...(row.score != null ? { score: Number(row.score) } : {}),
+    ...(row.medida != null ? { medida: Number(row.medida) } : {}),
+    ...(row.gano != null ? { gano: !!row.gano } : {}),
+    ...(row.version != null ? { version: Number(row.version) } : {}),
+    ...(row.nivel != null ? { nivel: Number(row.nivel) } : {}),
+    ...(row.metr && typeof row.metr === "object" ? { metr: row.metr } : {}),
+    ...(row.completo != null ? { completo: !!row.completo } : {}),
   };
 }
 
@@ -444,10 +453,13 @@ export function assignOrResumeJuego(store, patientId) {
   return { entry, puzzle, resumed: false };
 }
 
-export function completeJuego(store, patientId, puzzleId, startedAt) {
+export function completeJuego(store, patientId, puzzleId, startedAt, opts = {}) {
   const now = Date.now();
   const start = Number(startedAt) || now;
-  const entry = {
+  const durMin = Math.max(1, Math.round((now - start) / 60000));
+  const version = Number(opts.version) || 1;
+  const nivel = opts.nivel != null ? Number(opts.nivel) : null;
+  let entry = {
     type: "juego",
     game: "sudoku",
     puzzleId: String(puzzleId),
@@ -456,8 +468,298 @@ export function completeJuego(store, patientId, puzzleId, startedAt) {
     completedAt: now,
     durationMs: Math.max(0, now - start),
     at: now,
+    medida: durMin,
+    completo: true,
+    ...(nivel != null ? { nivel } : {}),
   };
   persistGameEntry(store, patientId, entry, start);
+  void import("./analizador/index.js")
+    .then(({ buildEventoPartida, recalcularPaciente }) => {
+      const offline =
+        typeof navigator !== "undefined" &&
+        navigator &&
+        navigator.onLine === false;
+      const S = store.get?.() || {};
+      const conAnalizador = !!(S.consents?.[patientId]?.analizador === true);
+      const ev = buildEventoPartida({
+        id: `SDK-${puzzleId}-${start}`,
+        pid: patientId,
+        game: "sudoku",
+        version,
+        inicio: start,
+        fin: now,
+        valor: durMin,
+        completo: true,
+        puzzleId: String(puzzleId),
+        metr: { terminado: true },
+        offline,
+      });
+      persistGameEntry(
+        store,
+        patientId,
+        { ...entry, ...ev, analizadorSkip: !conAnalizador },
+        start,
+      );
+      if (!conAnalizador) return;
+      if (!offline) recalcularPaciente(store, patientId);
+      else {
+        try {
+          const key = "quintia.partidas.pending";
+          const q = JSON.parse(localStorage.getItem(key) || "[]");
+          q.push(ev);
+          localStorage.setItem(key, JSON.stringify(q));
+        } catch {
+          /* ignore */
+        }
+      }
+    })
+    .catch(() => {});
+  return entry;
+}
+
+/** Registra una partida completada de Duelo de cartas. */
+/** Registra una partida de Frutas (valor = puntaje / XP). */
+export function completeFrutasPartida(
+  store,
+  patientId,
+  {
+    startedAt,
+    score = 0,
+    durSec = null,
+    invalidos = 0,
+    combos = [],
+    tiempos = [],
+    sinUsar = 0,
+    version = 1,
+    tipo = "Libre",
+    nivel = null,
+  } = {},
+) {
+  const now = Date.now();
+  const start = Number(startedAt) || now;
+  const valor = Math.max(0, Number(score) || 0);
+  const offline =
+    typeof navigator !== "undefined" && navigator && navigator.onLine === false;
+  const metr = {
+    invalidos: Number(invalidos) || 0,
+    combos: Array.isArray(combos) ? combos.slice() : [],
+    tiempos: Array.isArray(tiempos) ? tiempos.slice() : [],
+    sinUsar: Number(sinUsar) || 0,
+  };
+  let entry = {
+    type: "juego",
+    game: "frutas",
+    puzzleId: `FRUTAS-${start}`,
+    status: "completed",
+    startedAt: start,
+    completedAt: now,
+    durationMs:
+      durSec != null
+        ? Math.max(0, Number(durSec) * 1000)
+        : Math.max(0, now - start),
+    at: now,
+    score: valor,
+    medida: valor,
+    completo: true,
+    ...(nivel != null ? { nivel: Number(nivel) } : {}),
+    metr,
+  };
+  persistGameEntry(store, patientId, entry, null);
+  void import("./analizador/index.js")
+    .then(({ buildEventoPartida, recalcularPaciente }) => {
+      const S = store.get?.() || {};
+      const conAnalizador = !!(S.consents?.[patientId]?.analizador === true);
+      const ev = buildEventoPartida({
+        id: `FRU-${start}`,
+        pid: patientId,
+        game: "frutas",
+        version: Number(version) || 1,
+        inicio: start,
+        fin: now,
+        valor,
+        completo: true,
+        tipo: tipo === "Programada" ? "Programada" : "Libre",
+        metr,
+        offline,
+      });
+      persistGameEntry(
+        store,
+        patientId,
+        { ...entry, ...ev, analizadorSkip: !conAnalizador },
+        null,
+      );
+      if (!conAnalizador) return;
+      if (!offline) recalcularPaciente(store, patientId);
+      else {
+        try {
+          const key = "quintia.partidas.pending";
+          const q = JSON.parse(localStorage.getItem(key) || "[]");
+          q.push(ev);
+          localStorage.setItem(key, JSON.stringify(q));
+        } catch {
+          /* ignore */
+        }
+      }
+    })
+    .catch(() => {});
+  try {
+    syncGameLogsToServer(store, patientId);
+  } catch {
+    /* offline ok */
+  }
+  return entry;
+}
+
+/** Registra una partida de Simón dice (valor = secuencia más larga / rondas completadas). */
+export function completeSimonPartida(
+  store,
+  patientId,
+  { startedAt, pasos = 0, errorAt = null, version = 1, nivel = null } = {},
+) {
+  const now = Date.now();
+  const start = Number(startedAt) || now;
+  const valor = Math.max(0, Number(pasos) || 0);
+  const offline =
+    typeof navigator !== "undefined" && navigator && navigator.onLine === false;
+  let entry = {
+    type: "juego",
+    game: "simon",
+    puzzleId: `SIMON-${start}`,
+    status: "completed",
+    startedAt: start,
+    completedAt: now,
+    durationMs: Math.max(0, now - start),
+    at: now,
+    score: valor,
+    medida: valor,
+    completo: true,
+    ...(nivel != null ? { nivel: Number(nivel) } : {}),
+    metr: {
+      secuencia: valor,
+      errorAt: errorAt == null ? null : Number(errorAt),
+    },
+  };
+  persistGameEntry(store, patientId, entry, null);
+  void import("./analizador/index.js")
+    .then(({ buildEventoPartida, recalcularPaciente }) => {
+      const S = store.get?.() || {};
+      const conAnalizador = !!(S.consents?.[patientId]?.analizador === true);
+      const ev = buildEventoPartida({
+        id: `SIM-${start}`,
+        pid: patientId,
+        game: "simon",
+        version: Number(version) || 1,
+        inicio: start,
+        fin: now,
+        valor,
+        completo: true,
+        metr: entry.metr,
+        offline,
+      });
+      persistGameEntry(
+        store,
+        patientId,
+        { ...entry, ...ev, analizadorSkip: !conAnalizador },
+        null,
+      );
+      if (!conAnalizador) return;
+      if (!offline) recalcularPaciente(store, patientId);
+      else {
+        try {
+          const key = "quintia.partidas.pending";
+          const q = JSON.parse(localStorage.getItem(key) || "[]");
+          q.push(ev);
+          localStorage.setItem(key, JSON.stringify(q));
+        } catch {
+          /* ignore */
+        }
+      }
+    })
+    .catch(() => {});
+  try {
+    syncGameLogsToServer(store, patientId);
+  } catch {
+    /* offline ok */
+  }
+  return entry;
+}
+
+export function completeDueloPartida(
+  store,
+  patientId,
+  {
+    startedAt,
+    score,
+    medida,
+    gano,
+    fuera = 0,
+    errCambio = 0,
+    version = 1,
+    nivel = null,
+  } = {},
+) {
+  const now = Date.now();
+  const start = Number(startedAt) || now;
+  const offline =
+    typeof navigator !== "undefined" && navigator && navigator.onLine === false;
+  let entry = {
+    type: "juego",
+    game: "duelo",
+    puzzleId: `DUELO-${start}`,
+    status: "completed",
+    startedAt: start,
+    completedAt: now,
+    durationMs: Math.max(0, now - start),
+    at: now,
+    score: Number(score) || 0,
+    medida: Number(medida) || 0,
+    gano: !!gano,
+    ...(nivel != null ? { nivel: Number(nivel) } : {}),
+    metr: { fuera: Number(fuera) || 0, errCambio: Number(errCambio) || 0 },
+  };
+  persistGameEntry(store, patientId, entry, null);
+  void import("./analizador/index.js")
+    .then(({ buildEventoPartida, recalcularPaciente }) => {
+      const S = store.get?.() || {};
+      const conAnalizador = !!(S.consents?.[patientId]?.analizador === true);
+      const ev = buildEventoPartida({
+        id: `DUE-${start}`,
+        pid: patientId,
+        game: "duelo",
+        version: Number(version) || 1,
+        inicio: start,
+        fin: now,
+        valor: Number(medida) || Number(score) || 0,
+        completo: true,
+        gano: !!gano,
+        metr: entry.metr,
+        offline,
+      });
+      persistGameEntry(
+        store,
+        patientId,
+        { ...entry, ...ev, analizadorSkip: !conAnalizador },
+        null,
+      );
+      if (!conAnalizador) return;
+      if (!offline) recalcularPaciente(store, patientId);
+      else {
+        try {
+          const key = "quintia.partidas.pending";
+          const q = JSON.parse(localStorage.getItem(key) || "[]");
+          q.push(ev);
+          localStorage.setItem(key, JSON.stringify(q));
+        } catch {
+          /* ignore */
+        }
+      }
+    })
+    .catch(() => {});
+  try {
+    syncGameLogsToServer(store, patientId);
+  } catch {
+    /* offline ok */
+  }
   return entry;
 }
 

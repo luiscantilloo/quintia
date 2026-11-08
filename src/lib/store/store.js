@@ -441,6 +441,12 @@ const KEY = 'nara-memory-v1';
       groupSessions: { andres: [], mj: [] },
       customReports: [],
       pathOverrides: {},
+      // anCfg/anDraft: no inicializar en null (un PUT con null borraría la versión
+      // aprobada en Mongo). Quedan undefined hasta hidratar o hasta guardar/aprobar.
+      avisos: [],
+      analizadorByPid: {},
+      gameLogs: {},
+      moodLogs: {},
     };
     let changed = false;
     Object.keys(def).forEach(k => { if (s[k] === undefined) { s[k] = def[k]; changed = true; } });
@@ -624,13 +630,16 @@ const KEY = 'nara-memory-v1';
     }
     return changed;
   }
-  /** Pack de reglas de clasificación para un territorio. */
+  /**
+   * Pack vacío para territorio nuevo: sin preguntas ni niveles.
+   * El clínico/admin los arma y envía a aprobación. No clona PHQ/DIG globales.
+   */
   function emptyTerrRulesPack() {
     return {
-      risk: RISK.map((r) => ({ k: r.k, min: r.min, max: r.max, c: r.c })),
-      phq: defaultPhqRules(),
-      dig: defaultDigRules(),
-      ctx: defaultCtxRules(),
+      risk: [],
+      phq: { q: [] },
+      dig: { q: [], cuts: [] },
+      ctx: { q: [] },
       custom: [],
       pending: null,
       versions: [],
@@ -650,13 +659,19 @@ const KEY = 'nara-memory-v1';
       pendingClearedAt: base.pendingClearedAt || 0,
     };
   }
-  /** Crea/obtiene el pack de reglas del territorio (mutación; usar dentro de set/ensure). */
-  function ensureTerrRules(s, terr) {
+  /**
+   * Crea/obtiene el pack de reglas del territorio (mutación; usar dentro de set/ensure).
+   * Territorios nuevos → vacío. Territorios legacy sin byTerr → clonan reglas globales
+   * para no vaciar los que ya operan con PHQ/DIG vigentes.
+   */
+  function ensureTerrRules(s, terr, opts) {
     if (!s || !terr) return null;
     s.rules = s.rules || {};
     if (!s.rules.byTerr || typeof s.rules.byTerr !== 'object') s.rules.byTerr = {};
     if (!s.rules.byTerr[terr]) {
-      if (s.rules.phq || s.rules.risk || s.rules.dig) {
+      if (opts && opts.empty) {
+        s.rules.byTerr[terr] = emptyTerrRulesPack();
+      } else if (s.rules.phq || s.rules.risk || s.rules.dig) {
         s.rules.byTerr[terr] = cloneTerrRulesPack(s.rules);
       } else {
         s.rules.byTerr[terr] = emptyTerrRulesPack();

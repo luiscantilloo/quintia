@@ -64,15 +64,15 @@ export function UserMenu({ compact }: Props) {
             full ? "py-1 pr-3 pl-1" : "p-1",
           ].join(" ")}
         >
-          <span className="grid h-[34px] w-[34px] shrink-0 place-items-center rounded-full bg-nara-tinta text-sm font-medium text-white">
+          <span className="grid h-[34px] w-[34px] shrink-0 place-items-center rounded-full bg-gradient-to-br from-[#6C04C9] to-[#31C6E6] text-sm font-semibold text-white">
             {initials}
           </span>
           {full ? (
             <span className="flex min-w-0 flex-col items-start leading-tight">
-              <span className="max-w-[140px] truncate text-sm font-medium">
+              <span className="max-w-[160px] truncate text-sm font-semibold">
                 {u.name}
               </span>
-              <span className="max-w-[140px] truncate text-xs text-texto-secundario">
+              <span className="max-w-[160px] truncate text-xs text-texto-secundario">
                 {u.role}
               </span>
             </span>
@@ -106,7 +106,7 @@ export function UserMenu({ compact }: Props) {
               onClick={() => setMenu(false)}
               className="group relative flex items-start gap-3 px-3.5 py-3.5 text-nara-tinta no-underline transition-colors hover:bg-nara-crema"
             >
-              <span className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-nara-tinta text-sm font-medium text-white">
+              <span className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-gradient-to-br from-[#6C04C9] to-[#31C6E6] text-sm font-semibold text-white">
                 {initials}
               </span>
               <span className="flex min-w-0 flex-1 flex-col gap-0.5 pt-0.5">

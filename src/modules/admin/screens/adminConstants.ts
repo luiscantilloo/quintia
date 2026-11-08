@@ -31,10 +31,10 @@ export const NOTES: Record<string, string> = {
   mood: "Check-in «¿Cómo se siente hoy?» en la app · Diario, Semanal o Quincenal",
   clin: "Canal según capacidad digital (persona / teléfono / videollamada)",
   ia: "Botón TEJIVA en la app del paciente",
-  frutas: "Atención visual y planificación · cada 2h, cada 8h o diario",
-  simon: "Memoria de trabajo y atención · cada 2h, cada 8h o diario",
-  duelo: "Flexibilidad y decisiones · cada 2h, cada 8h o diario",
-  sudoku: "Lógica y planificación · cada 2h, cada 8h o diario",
+  frutas: "Atención visual y planificación",
+  simon: "Memoria de trabajo y atención",
+  duelo: "Flexibilidad y decisiones",
+  sudoku: "Lógica y planificación",
   analizador: "Compara el desempeño de los juegos con el rango habitual",
 };
 
@@ -141,7 +141,7 @@ export const INITIAL_ADMIN_STATE: AdminUiState = {
   goalsForm: false,
   gf: { daily: "", weekly: "" },
   gfErr: "",
-  sel: "P08",
+  sel: "P01",
   drafts: {},
   pathDraftDirty: {},
   scope: "all",

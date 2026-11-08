@@ -649,12 +649,22 @@ export function PathRoutesPanel({ v }: { v: Record<string, any> }) {
           games={v.pathGames || []}
           onPrev={() => v.pathStepPrev?.()}
           onNext={() => v.pathStepNext?.()}
+          onSaveVersion={(gameId, draft) => v.saveGameVersion?.(gameId, draft)}
         />
       ) : null}
 
       {/* Analizador */}
       {v.pathTabA ? (
         <PathAnalizadorPanel
+          key={[
+            "an",
+            v.pathAnalizador?.version,
+            v.pathAnalizador?.partidas,
+            v.pathAnalizador?.dias,
+            v.pathAnalizador?.descarta,
+            v.pathAnalizador?.sens,
+            v.pathAnalizador?.plazo,
+          ].join("-")}
           fuentes={(v.pathGames || []).map(
             (g: { id: string; nombre: string; hab: string }) => ({
               ...g,
@@ -664,6 +674,7 @@ export function PathRoutesPanel({ v }: { v: Record<string, any> }) {
           )}
           cfg={v.pathAnalizador || { version: 2, partidas: 10, dias: 14, descarta: 3, sens: "Media", plazo: 7 }}
           onPrev={() => v.pathStepPrev?.()}
+          onSaveVersion={(draft) => v.saveAnalizadorVersion?.(draft)}
         />
       ) : null}
 

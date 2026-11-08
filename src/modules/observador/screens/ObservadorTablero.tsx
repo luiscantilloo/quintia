@@ -15,6 +15,7 @@ type Resumen = {
   porTerritorio: Conteos;
   porEstado: Conteos;
   porRiesgo: Conteos;
+  porAnalizador?: Conteos;
 };
 
 function isCrisisLabel(label: string) {
@@ -112,7 +113,7 @@ export function ObservadorTablero() {
           {resumen.total.toLocaleString("es-CO")} personas en el programa
         </h1>
       </div>
-      <div className="grid min-w-0 gap-3 sm:grid-cols-3">
+      <div className="grid min-w-0 gap-3 sm:grid-cols-2 lg:grid-cols-4">
         <Bloque
           titulo="Por territorio"
           datos={resumen.porTerritorio}
@@ -124,9 +125,15 @@ export function ObservadorTablero() {
           datos={resumen.porRiesgo}
           minGrupo={resumen.minGrupo}
         />
+        <Bloque
+          titulo="Por analizador"
+          datos={resumen.porAnalizador || {}}
+          minGrupo={resumen.minGrupo}
+        />
       </div>
       <p className="font-mono text-[12px] text-[#6B7280]">
-        Solo datos agregados. No se muestran datos personales.
+        Solo datos agregados. Grupos con menos de {resumen.minGrupo} aparecen
+        como «menos de {resumen.minGrupo}». No se muestran datos personales.
       </p>
     </div>
   );
