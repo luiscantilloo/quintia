@@ -465,6 +465,9 @@ export function completeJuego(store, patientId, puzzleId, startedAt, opts = {}) 
   const durMin = Math.max(1, Math.round((now - start) / 60000));
   const version = Number(opts.version) || 1;
   const nivel = opts.nivel != null ? Number(opts.nivel) : null;
+  const borradas = Math.max(0, Number(opts.borradas) || 0);
+  const errores = Math.max(0, Number(opts.errores) || 0);
+  const metr = { terminado: true, borradas, errores };
   let entry = {
     type: "juego",
     game: "sudoku",
@@ -476,6 +479,7 @@ export function completeJuego(store, patientId, puzzleId, startedAt, opts = {}) 
     at: now,
     medida: durMin,
     completo: true,
+    metr,
     ...(nivel != null ? { nivel } : {}),
   };
   persistGameEntry(store, patientId, entry, start);
@@ -497,13 +501,19 @@ export function completeJuego(store, patientId, puzzleId, startedAt, opts = {}) 
         valor: durMin,
         completo: true,
         puzzleId: String(puzzleId),
-        metr: { terminado: true },
+        metr,
         offline,
       });
       persistGameEntry(
         store,
         patientId,
-        { ...entry, ...ev, analizadorSkip: !conAnalizador },
+        {
+          ...entry,
+          ...ev,
+          puzzleId: entry.puzzleId,
+          metr: entry.metr,
+          analizadorSkip: !conAnalizador,
+        },
         start,
       );
       if (!conAnalizador) return;
@@ -570,7 +580,7 @@ export function completeFrutasPartida(
     ...(nivel != null ? { nivel: Number(nivel) } : {}),
     metr,
   };
-  persistGameEntry(store, patientId, entry, null);
+  persistGameEntry(store, patientId, entry, start);
   void import("./analizador/index.js")
     .then(({ buildEventoPartida, recalcularPaciente }) => {
       const S = store.get?.() || {};
@@ -587,12 +597,19 @@ export function completeFrutasPartida(
         tipo: tipo === "Programada" ? "Programada" : "Libre",
         metr,
         offline,
+        puzzleId: entry.puzzleId,
       });
       persistGameEntry(
         store,
         patientId,
-        { ...entry, ...ev, analizadorSkip: !conAnalizador },
-        null,
+        {
+          ...entry,
+          ...ev,
+          puzzleId: entry.puzzleId,
+          metr: entry.metr,
+          analizadorSkip: !conAnalizador,
+        },
+        start,
       );
       if (!conAnalizador) return;
       if (!offline) recalcularPaciente(store, patientId);
@@ -645,7 +662,7 @@ export function completeSimonPartida(
       errorAt: errorAt == null ? null : Number(errorAt),
     },
   };
-  persistGameEntry(store, patientId, entry, null);
+  persistGameEntry(store, patientId, entry, start);
   void import("./analizador/index.js")
     .then(({ buildEventoPartida, recalcularPaciente }) => {
       const S = store.get?.() || {};
@@ -661,12 +678,19 @@ export function completeSimonPartida(
         completo: true,
         metr: entry.metr,
         offline,
+        puzzleId: entry.puzzleId,
       });
       persistGameEntry(
         store,
         patientId,
-        { ...entry, ...ev, analizadorSkip: !conAnalizador },
-        null,
+        {
+          ...entry,
+          ...ev,
+          puzzleId: entry.puzzleId,
+          metr: entry.metr,
+          analizadorSkip: !conAnalizador,
+        },
+        start,
       );
       if (!conAnalizador) return;
       if (!offline) recalcularPaciente(store, patientId);
@@ -723,7 +747,7 @@ export function completeDueloPartida(
     ...(nivel != null ? { nivel: Number(nivel) } : {}),
     metr: { fuera: Number(fuera) || 0, errCambio: Number(errCambio) || 0 },
   };
-  persistGameEntry(store, patientId, entry, null);
+  persistGameEntry(store, patientId, entry, start);
   void import("./analizador/index.js")
     .then(({ buildEventoPartida, recalcularPaciente }) => {
       const S = store.get?.() || {};
@@ -740,12 +764,19 @@ export function completeDueloPartida(
         gano: !!gano,
         metr: entry.metr,
         offline,
+        puzzleId: entry.puzzleId,
       });
       persistGameEntry(
         store,
         patientId,
-        { ...entry, ...ev, analizadorSkip: !conAnalizador },
-        null,
+        {
+          ...entry,
+          ...ev,
+          puzzleId: entry.puzzleId,
+          metr: entry.metr,
+          analizadorSkip: !conAnalizador,
+        },
+        start,
       );
       if (!conAnalizador) return;
       if (!offline) recalcularPaciente(store, patientId);
@@ -884,13 +915,15 @@ export function loadBoardProgress(patientId, puzzleId) {
     return {
       cells: row.cells.map((n) => Number(n) || 0),
       startedAt: Number(row.startedAt) || 0,
+      borradas: Number(row.borradas) || 0,
+      errores: Number(row.errores) || 0,
     };
   } catch {
     return null;
   }
 }
 
-export function saveBoardProgress(patientId, puzzleId, cells, startedAt) {
+export function saveBoardProgress(patientId, puzzleId, cells, startedAt, stats) {
   if (typeof localStorage === "undefined") return;
   try {
     const raw = localStorage.getItem(BOARD_LS);
@@ -901,6 +934,8 @@ export function saveBoardProgress(patientId, puzzleId, cells, startedAt) {
       cells: (cells || []).slice(0, 81),
       startedAt: Number(startedAt) || Date.now(),
       at: Date.now(),
+      borradas: Math.max(0, Number(stats?.borradas) || 0),
+      errores: Math.max(0, Number(stats?.errores) || 0),
     };
     localStorage.setItem(BOARD_LS, JSON.stringify(o));
   } catch {

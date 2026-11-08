@@ -161,13 +161,15 @@ function buildGameStats(gameId: string, hist: HistEntry[]): StatRow[] {
 
   // sudoku
   const durs = done.map((e) => Number(e.durationMs) || 0).filter((n) => n > 0);
-  const borradas = done.map(
-    (e) =>
-      Number((e.metr as { borradas?: number } | undefined)?.borradas) || 0,
+  const withMetr = done.filter(
+    (e) => e.metr && typeof e.metr === "object",
   );
-  const errores = done.map(
-    (e) => Number((e.metr as { errores?: number } | undefined)?.errores) || 0,
-  );
+  const borradas = withMetr
+    .map((e) => Number((e.metr as { borradas?: number }).borradas))
+    .filter((n) => Number.isFinite(n) && n >= 0);
+  const errores = withMetr
+    .map((e) => Number((e.metr as { errores?: number }).errores))
+    .filter((n) => Number.isFinite(n) && n >= 0);
   const ok = done.filter((e) => e.completo !== false).length;
   return [
     {
@@ -176,15 +178,11 @@ function buildGameStats(gameId: string, hist: HistEntry[]): StatRow[] {
     },
     {
       label: "Casillas borradas",
-      value: borradas.some((n) => n > 0)
-        ? String(Math.round(avg(borradas) || 0))
-        : "—",
+      value: borradas.length ? String(Math.round(avg(borradas) || 0)) : "—",
     },
     {
       label: "Errores",
-      value: errores.some((n) => n > 0)
-        ? String(Math.round(avg(errores) || 0))
-        : "—",
+      value: errores.length ? String(Math.round(avg(errores) || 0)) : "—",
     },
     {
       label: "Terminado o no",

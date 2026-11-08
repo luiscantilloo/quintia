@@ -114,6 +114,7 @@ export function SimonGame({
   const playerIndexRef = useRef(0);
   const roundRef = useRef(0);
   const heartsRef = useRef(maxHearts);
+  const lastErrorAtRef = useRef<number | null>(null);
   const acceptingRef = useRef(false);
   const runningRef = useRef(false);
   const playbackTokenRef = useRef(0);
@@ -278,7 +279,10 @@ export function SimonGame({
       completeSimonPartida(store, patientId, {
         startedAt: startedAtRef.current,
         pasos: score,
-        errorAt: playerIndexRef.current,
+        errorAt:
+          lastErrorAtRef.current != null
+            ? lastErrorAtRef.current
+            : playerIndexRef.current,
         version: Number(cfg.version) || 1,
         nivel: startNivelRef.current,
       });
@@ -291,6 +295,7 @@ export function SimonGame({
     playerIndexRef.current = 0;
     roundRef.current = 0;
     heartsRef.current = maxHearts;
+    lastErrorAtRef.current = null;
     setHearts(maxHearts);
     runningRef.current = true;
     acceptingRef.current = false;
@@ -330,6 +335,7 @@ export function SimonGame({
       await flash(color, 180);
 
       if (color !== sequenceRef.current[playerIndexRef.current]) {
+        lastErrorAtRef.current = playerIndexRef.current;
         const left = heartsRef.current - 1;
         heartsRef.current = left;
         setHearts(left);

@@ -9,6 +9,7 @@ import {
   completeJuego,
   findConflictCells,
   isBoardComplete,
+  isValidMove,
   juegosWindowStatusFor,
   loadBoardProgress,
   parseBoard,
@@ -53,6 +54,8 @@ export function SudokuGame({
   const [blockedHint, setBlockedHint] = useState("");
   const [tick, setTick] = useState(0);
   const bootRef = useRef(false);
+  const borradasRef = useRef(0);
+  const erroresRef = useRef(0);
 
   const status = juegosWindowStatusFor(store, patientId);
 
@@ -78,6 +81,8 @@ export function SudokuGame({
       board = saved.cells.map((n, i) => (givenMask[i] ? base[i] : n));
       if (saved.startedAt > 0) start = saved.startedAt;
     }
+    borradasRef.current = Number(saved?.borradas) || 0;
+    erroresRef.current = Number(saved?.errores) || 0;
     setPuzzle(pz);
     setGiven(givenMask);
     setCells(board);
@@ -94,6 +99,8 @@ export function SudokuGame({
       setPuzzle(null);
       return;
     }
+    borradasRef.current = 0;
+    erroresRef.current = 0;
     applyPuzzle(res.puzzle, Number(res.entry?.startedAt) || Date.now());
     void import("@/lib/store/hydrateProgram").then((m) => {
       if (typeof m.pauseLiveHydrate === "function") m.pauseLiveHydrate(8_000);
@@ -112,7 +119,10 @@ export function SudokuGame({
 
   useEffect(() => {
     if (!puzzle || done || !cells.length) return;
-    saveBoardProgress(patientId, puzzle.id, cells, startedAt);
+    saveBoardProgress(patientId, puzzle.id, cells, startedAt, {
+      borradas: borradasRef.current,
+      errores: erroresRef.current,
+    });
   }, [cells, patientId, puzzle, startedAt, done]);
 
   const conflicts = useMemo(() => findConflictCells(cells), [cells]);
@@ -145,11 +155,24 @@ export function SudokuGame({
     if (given[selected]) return;
 
     const next = cells.slice();
+    const prev = Number(cells[selected]) || 0;
     if (value === 0) {
+      if (prev > 0) borradasRef.current += 1;
       next[selected] = 0;
       setCells(next);
       return;
     }
+
+    // Error: número distinto a la solución, o duplicado en fila/col/bloque.
+    const sol = puzzle ? parseBoard(puzzle.solution) : [];
+    const wrongSol =
+      sol.length === 81 && Number(sol[selected]) !== Number(value);
+    const dup = !isValidMove(
+      next.map((n, i) => (i === selected ? 0 : n)),
+      selected,
+      value,
+    );
+    if (wrongSol || dup) erroresRef.current += 1;
 
     next[selected] = value;
     setCells(next);
@@ -160,6 +183,8 @@ export function SudokuGame({
       completeJuego(store, patientId, puzzle.id, startedAt, {
         version: Number(cfg.version) || 1,
         nivel: Number(cfg.nivel) || 1,
+        borradas: borradasRef.current,
+        errores: erroresRef.current,
       });
       syncGameLogsToServer(store, patientId);
       void import("@/lib/store/hydrateProgram").then((m) => {
